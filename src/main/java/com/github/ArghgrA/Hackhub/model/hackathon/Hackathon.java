@@ -1,9 +1,8 @@
-package com.github.ArghgrA.Hackhub.Model.Hackathon;
-import com.github.ArghgrA.Hackhub.Model.Intervallo;
-import com.github.ArghgrA.Hackhub.Model.Posizione.Posizione;
-import com.github.ArghgrA.Hackhub.Model.Utente.Staff.Giudice;
-import com.github.ArghgrA.Hackhub.Model.Utente.Staff.Mentore;
-import com.github.ArghgrA.Hackhub.Model.Premio.Premio;
+package com.github.ArghgrA.Hackhub.model.hackathon;
+import com.github.ArghgrA.Hackhub.model.posizione.Posizione;
+import com.github.ArghgrA.Hackhub.model.utente.staff.Giudice;
+import com.github.ArghgrA.Hackhub.model.utente.staff.Mentore;
+import com.github.ArghgrA.Hackhub.model.premio.Premio;
 import lombok.Getter;
 import lombok.Setter;
 import java.util.List;
