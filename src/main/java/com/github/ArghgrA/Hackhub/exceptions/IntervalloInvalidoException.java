@@ -1,4 +1,4 @@
-package com.github.ArghgrA.Hackhub.model.hackathon;
+package com.github.ArghgrA.Hackhub.exceptions;
 
 public class IntervalloInvalidoException extends RuntimeException {
     public IntervalloInvalidoException(String message) {

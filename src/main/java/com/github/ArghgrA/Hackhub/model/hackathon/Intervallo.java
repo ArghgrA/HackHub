@@ -1,5 +1,6 @@
 package com.github.ArghgrA.Hackhub.model.hackathon;
 
+import com.github.ArghgrA.Hackhub.exceptions.IntervalloInvalidoException;
 import lombok.Getter;
 import lombok.NonNull;
 

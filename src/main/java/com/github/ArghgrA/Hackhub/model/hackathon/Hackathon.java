@@ -3,9 +3,10 @@ import com.github.ArghgrA.Hackhub.model.posizione.Posizione;
 import com.github.ArghgrA.Hackhub.model.utente.staff.Giudice;
 import com.github.ArghgrA.Hackhub.model.utente.staff.Mentore;
 import com.github.ArghgrA.Hackhub.model.premio.Premio;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,43 +24,50 @@ import java.util.UUID;
  * modificati anche dopo la creazione dell'oggetto.
  * </p>
  */
+@Entity
 @Getter
-@AllArgsConstructor
 public class Hackathon {
 
     /**
      * Identificatore univoco dell'hackathon.
      */
+    @Id
     private UUID id;
 
     /**
      * Nome dell'hackathon.
      */
+    @Setter
     private String nome;
 
     /**
      * Regolamento ufficiale dell'hackathon.
      */
+    @Setter
     private String regolamento;
 
     /**
      * Posizione in cui si svolge l'hackathon.
      */
+    @Setter
     private Posizione posizione;
 
     /**
      * Premio associato all'hackathon.
      */
+    @Setter
     private Premio premio;
 
     /**
      * Intervallo temporale di svolgimento dell'hackathon.
      */
+    @Setter
     private Intervallo intervallo;
 
     /**
      * Numero massimo di membri consentiti per ciascun team.
      */
+    @Setter
     private int maxNumMebri;
 
     /**
@@ -77,7 +85,16 @@ public class Hackathon {
      * Può essere aggiornata dopo la creazione dell'oggetto.
      * </p>
      */
-    @Setter
     private List<Mentore> mentori;
+
+
+    public Hackathon() {
+        id = UUID.randomUUID();
+        this.mentori = new ArrayList<Mentore>();
+    }
+
+    public void setMentore(Mentore mentore) {
+        mentori.add(mentore);
+    }
 }
 

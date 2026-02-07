@@ -1,6 +1,8 @@
 package com.github.ArghgrA.Hackhub.model.utente.staff;
 
 import com.github.ArghgrA.Hackhub.model.utente.AbstractUtente;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ForeignKey;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,8 +21,8 @@ import java.util.UUID;
  * tramite il suo identificatore.
  * </p>
  */
-@Getter
-@Setter
+@Getter @Setter
+@Entity
 public class MembroStaff extends AbstractUtente {
 
     /**
