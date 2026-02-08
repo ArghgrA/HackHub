@@ -24,50 +24,44 @@ import java.util.UUID;
  * modificati anche dopo la creazione dell'oggetto.
  * </p>
  */
-@Entity
+
 @Getter
+@Setter
 public class Hackathon {
 
     /**
      * Identificatore univoco dell'hackathon.
      */
-    @Id
     private UUID id;
 
     /**
      * Nome dell'hackathon.
      */
-    @Setter
     private String nome;
 
     /**
      * Regolamento ufficiale dell'hackathon.
      */
-    @Setter
     private String regolamento;
 
     /**
      * Posizione in cui si svolge l'hackathon.
      */
-    @Setter
     private Posizione posizione;
 
     /**
      * Premio associato all'hackathon.
      */
-    @Setter
     private Premio premio;
 
     /**
      * Intervallo temporale di svolgimento dell'hackathon.
      */
-    @Setter
     private Intervallo intervallo;
 
     /**
      * Numero massimo di membri consentiti per ciascun team.
      */
-    @Setter
     private int maxNumMebri;
 
     /**
@@ -76,7 +70,7 @@ public class Hackathon {
      * Può essere impostato o modificato dopo la creazione dell'istanza.
      * </p>
      */
-    @Setter
+    @Setter(AccessLevel.NONE)
     private Giudice giudice;
 
     /**
@@ -85,8 +79,8 @@ public class Hackathon {
      * Può essere aggiornata dopo la creazione dell'oggetto.
      * </p>
      */
+    @Setter(AccessLevel.NONE)
     private List<Mentore> mentori;
-
 
     public Hackathon() {
         id = UUID.randomUUID();

@@ -22,7 +22,6 @@ import java.util.UUID;
  * </p>
  */
 @Getter @Setter
-@Entity
 public class MembroStaff extends AbstractUtente {
 
     /**

@@ -5,5 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;
 
-public interface HackathonRepository extends JpaRepository<Hackathon,UUID> {
+//extends JpaRepository<Hackathon,UUID>
+public interface HackathonRepository{
 }

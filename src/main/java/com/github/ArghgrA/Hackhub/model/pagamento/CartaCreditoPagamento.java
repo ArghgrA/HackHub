@@ -6,4 +6,5 @@ import lombok.Getter;
 @AllArgsConstructor @Getter
 public class CartaCreditoPagamento implements Pagamento{
     private final String iban;
+
 }
