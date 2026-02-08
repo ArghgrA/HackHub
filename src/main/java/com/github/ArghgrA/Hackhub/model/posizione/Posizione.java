@@ -4,6 +4,7 @@ package com.github.ArghgrA.Hackhub.model.posizione;
 } */
 
 import com.github.ArghgrA.Hackhub.model.hackathon.Hackathon;
+import com.github.ArghgrA.Hackhub.model.pagamento.PagamentoKind;
 import jakarta.persistence.*;
 
 import java.util.UUID;
@@ -12,6 +13,10 @@ import java.util.UUID;
 public abstract class Posizione{
     @Id
     private UUID id;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private PosizioneKind posizioneKind;
 
     @OneToOne
     @JoinColumn(name = "hackathon_id")
