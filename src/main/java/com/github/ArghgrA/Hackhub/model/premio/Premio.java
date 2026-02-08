@@ -5,6 +5,7 @@ import com.github.ArghgrA.Hackhub.model.pagamento.Pagamento;
 import com.github.ArghgrA.Hackhub.model.pagamento.PagamentoKind;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.UUID;
 
@@ -16,9 +17,11 @@ import java.util.UUID;
 
 @Inheritance(strategy = InheritanceType.JOINED)
 @Entity
+@Setter
 @NoArgsConstructor
 public abstract class Premio{
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     private int somma;

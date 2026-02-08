@@ -3,6 +3,7 @@ package com.github.ArghgrA.Hackhub.model.pagamento;
 import com.github.ArghgrA.Hackhub.model.hackathon.Hackathon;
 import com.github.ArghgrA.Hackhub.model.team.Team;
 import jakarta.persistence.*;
+import lombok.Setter;
 
 import java.util.UUID;
 
@@ -10,8 +11,10 @@ import java.util.UUID;
 /*public interface Pagamento {
 }*/
 @Entity
+@Setter
 public abstract class Pagamento{
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Enumerated(EnumType.STRING)

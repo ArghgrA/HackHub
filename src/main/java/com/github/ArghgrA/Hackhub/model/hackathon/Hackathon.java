@@ -34,6 +34,7 @@ public class Hackathon {
      * Identificatore univoco dell'hackathon.
      */
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     /**
@@ -79,7 +80,7 @@ public class Hackathon {
     //Va ad aggiungere una colonna chiamata giudice_id con id del giudice preso dalla classe Giudice
     //@JoinColumn(name = "giudice_id", referencedColumnName = "id")
     //@OneToOne(mappedBy = "hackathon")
-    @Setter(AccessLevel.NONE)
+    //@Setter(AccessLevel.NONE)
     @OneToOne(mappedBy = "hackathon", cascade = CascadeType.ALL, orphanRemoval = true)
     //@OneToMany(mappedBy = "hackathon", cascade = CascadeType.ALL, orphanRemoval = true)
     private Giudice giudice;
