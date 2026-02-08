@@ -1,10 +1,14 @@
 package com.github.ArghgrA.Hackhub.model.hackathon;
 
 import com.github.ArghgrA.Hackhub.exceptions.IntervalloInvalidoException;
+import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
+
 /**
  * Rappresenta un intervallo temporale composto da quattro istanti fondamentali:
  * - inizio e fine del periodo di iscrizione,
@@ -20,27 +24,37 @@ import java.time.LocalDateTime;
  * Se uno qualsiasi di questi vincoli non è soddisfatto, il costruttore lancia {@link IntervalloInvalidoException}.
  */
 @Getter
+@Entity
+@NoArgsConstructor
 public class Intervallo {
+
+    @Id
+    private UUID id;
 
     /**
      * Data e ora di inizio del periodo di iscrizione.
      */
-    private final LocalDateTime inizioIscrizioni;
+    private LocalDateTime inizioIscrizioni;
 
     /**
      * Data e ora di fine del periodo di iscrizione.
      */
-    private final LocalDateTime fineIscrizioni;
+    private LocalDateTime fineIscrizioni;
 
     /**
      * Data e ora di inizio della competizione.
      */
-    private final LocalDateTime inizioCompetizione;
+    private LocalDateTime inizioCompetizione;
 
     /**
      * Data e ora di fine della competizione.
      */
-    private final LocalDateTime fineCompetizione;
+    private LocalDateTime fineCompetizione;
+
+
+    @OneToOne
+    @JoinColumn(name = "hackathon_id")
+    private Hackathon hackathon;
 
     /**
      * Costruisce un nuovo oggetto {@code Intervallo} con i quattro istanti temporali specificati.

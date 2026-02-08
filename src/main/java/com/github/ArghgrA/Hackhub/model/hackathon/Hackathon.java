@@ -27,11 +27,13 @@ import java.util.UUID;
 
 @Getter
 @Setter
+@Entity
 public class Hackathon {
 
     /**
      * Identificatore univoco dell'hackathon.
      */
+    @Id
     private UUID id;
 
     /**
@@ -47,16 +49,19 @@ public class Hackathon {
     /**
      * Posizione in cui si svolge l'hackathon.
      */
+    @OneToOne(mappedBy = "hackathon", cascade = CascadeType.ALL, orphanRemoval = true)
     private Posizione posizione;
 
     /**
      * Premio associato all'hackathon.
      */
+    @OneToOne(mappedBy = "hackathon", cascade = CascadeType.ALL, orphanRemoval = true)
     private Premio premio;
 
     /**
      * Intervallo temporale di svolgimento dell'hackathon.
      */
+    @OneToOne(mappedBy = "hackathon", cascade = CascadeType.ALL, orphanRemoval = true)
     private Intervallo intervallo;
 
     /**
@@ -70,7 +75,13 @@ public class Hackathon {
      * Può essere impostato o modificato dopo la creazione dell'istanza.
      * </p>
      */
+
+    //Va ad aggiungere una colonna chiamata giudice_id con id del giudice preso dalla classe Giudice
+    //@JoinColumn(name = "giudice_id", referencedColumnName = "id")
+    //@OneToOne(mappedBy = "hackathon")
     @Setter(AccessLevel.NONE)
+    @OneToOne(mappedBy = "hackathon", cascade = CascadeType.ALL, orphanRemoval = true)
+    //@OneToMany(mappedBy = "hackathon", cascade = CascadeType.ALL, orphanRemoval = true)
     private Giudice giudice;
 
     /**
@@ -80,10 +91,17 @@ public class Hackathon {
      * </p>
      */
     @Setter(AccessLevel.NONE)
+    /*
+    mappedBy -> indica che la relazione e' gestita dall'entita' Mentore
+    cascade -> le operazioni a cascata se salviamo/cancelliamo l'hackathon automaticamente viene salvato anche il mentore
+    orphanRemoval -> se rimuoviamo un mentore dalla lista mentori dell'hackathon, quel mentore viene elimanto dal db.
+     */
+    @OneToMany(mappedBy = "hackathon", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Mentore> mentori;
 
     public Hackathon() {
         id = UUID.randomUUID();
+        //this.giudice = new ArrayList<Giudice>();
         this.mentori = new ArrayList<Mentore>();
     }
 

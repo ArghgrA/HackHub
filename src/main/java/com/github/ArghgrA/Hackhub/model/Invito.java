@@ -1,6 +1,12 @@
 package com.github.ArghgrA.Hackhub.model;
 
+import com.github.ArghgrA.Hackhub.model.team.Team;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 import java.util.UUID;
@@ -16,22 +22,23 @@ public class Invito {
     /**
      * Identificatore univoco dell'invito, generato automaticamente al momento della creazione.
      */
-    private final UUID id;
+    private UUID id;
 
     /**
      * Identificatore del team che ha inviato l'invito.
      */
-    private final UUID idTeam;
+
+    private UUID idTeam;
 
     /**
      * Identificatore dell'utente a cui è rivolto l'invito.
      */
-    private final UUID idUtente;
+    private UUID idUtente;
 
     /**
      * Messaggio testuale associato all'invito (può contenere informazioni aggiuntive o personalizzate).
      */
-    private final String testo;
+    private String testo;
 
     /**
      * Costruisce un nuovo invito con i parametri specificati.
