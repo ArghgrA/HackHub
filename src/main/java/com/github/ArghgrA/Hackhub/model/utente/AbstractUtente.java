@@ -3,6 +3,7 @@ package com.github.ArghgrA.Hackhub.model.utente;
 import jakarta.persistence.*;
 import lombok.Generated;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.UUID;
 
@@ -23,7 +24,7 @@ Se in futuro volessimo andare a far diventare questa classe in entita' dovremmo 
  */
 @Getter
 //@MappedSuperclass
-
+@Setter
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class AbstractUtente {
@@ -32,6 +33,7 @@ public abstract class AbstractUtente {
      * Identificatore univoco dell'utente.
      */
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     /**

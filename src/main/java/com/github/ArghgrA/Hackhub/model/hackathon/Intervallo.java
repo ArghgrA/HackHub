@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -24,11 +25,13 @@ import java.util.UUID;
  * Se uno qualsiasi di questi vincoli non è soddisfatto, il costruttore lancia {@link IntervalloInvalidoException}.
  */
 @Getter
+@Setter
 @Entity
 @NoArgsConstructor
 public class Intervallo {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     /**

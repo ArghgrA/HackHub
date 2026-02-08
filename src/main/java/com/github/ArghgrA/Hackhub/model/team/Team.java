@@ -17,6 +17,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class Team {
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     private String nome;
     //messo cosi pk il tipo Byte
