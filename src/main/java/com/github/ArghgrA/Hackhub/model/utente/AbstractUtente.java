@@ -1,5 +1,7 @@
 package com.github.ArghgrA.Hackhub.model.utente;
 
+import jakarta.persistence.*;
+import lombok.Generated;
 import lombok.Getter;
 
 import java.util.UUID;
@@ -13,12 +15,23 @@ import java.util.UUID;
  * o partecipanti.
  * </p>
  */
+
+/*
+Se in futuro volessimo andare a far diventare questa classe in entita' dovremmo fare cosi:
+@Entity
+@Inheritance(strategy = InheritanceType.JOINED) // oppure SINGLE_TABLE o TABLE_PER_CLASS
+ */
 @Getter
-public class AbstractUtente {
+//@MappedSuperclass
+
+@Entity
+@Inheritance(strategy = InheritanceType.JOINED)
+public abstract class AbstractUtente {
 
     /**
      * Identificatore univoco dell'utente.
      */
+    @Id
     private UUID id;
 
     /**

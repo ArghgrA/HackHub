@@ -3,9 +3,10 @@ import com.github.ArghgrA.Hackhub.model.posizione.Posizione;
 import com.github.ArghgrA.Hackhub.model.utente.staff.Giudice;
 import com.github.ArghgrA.Hackhub.model.utente.staff.Mentore;
 import com.github.ArghgrA.Hackhub.model.premio.Premio;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,13 +24,16 @@ import java.util.UUID;
  * modificati anche dopo la creazione dell'oggetto.
  * </p>
  */
+
 @Getter
-@AllArgsConstructor
+@Setter
+@Entity
 public class Hackathon {
 
     /**
      * Identificatore univoco dell'hackathon.
      */
+    @Id
     private UUID id;
 
     /**
@@ -45,16 +49,19 @@ public class Hackathon {
     /**
      * Posizione in cui si svolge l'hackathon.
      */
+    @OneToOne(mappedBy = "hackathon", cascade = CascadeType.ALL, orphanRemoval = true)
     private Posizione posizione;
 
     /**
      * Premio associato all'hackathon.
      */
+    @OneToOne(mappedBy = "hackathon", cascade = CascadeType.ALL, orphanRemoval = true)
     private Premio premio;
 
     /**
      * Intervallo temporale di svolgimento dell'hackathon.
      */
+    @OneToOne(mappedBy = "hackathon", cascade = CascadeType.ALL, orphanRemoval = true)
     private Intervallo intervallo;
 
     /**
@@ -68,7 +75,13 @@ public class Hackathon {
      * Può essere impostato o modificato dopo la creazione dell'istanza.
      * </p>
      */
-    @Setter
+
+    //Va ad aggiungere una colonna chiamata giudice_id con id del giudice preso dalla classe Giudice
+    //@JoinColumn(name = "giudice_id", referencedColumnName = "id")
+    //@OneToOne(mappedBy = "hackathon")
+    @Setter(AccessLevel.NONE)
+    @OneToOne(mappedBy = "hackathon", cascade = CascadeType.ALL, orphanRemoval = true)
+    //@OneToMany(mappedBy = "hackathon", cascade = CascadeType.ALL, orphanRemoval = true)
     private Giudice giudice;
 
     /**
@@ -77,7 +90,23 @@ public class Hackathon {
      * Può essere aggiornata dopo la creazione dell'oggetto.
      * </p>
      */
-    @Setter
+    @Setter(AccessLevel.NONE)
+    /*
+    mappedBy -> indica che la relazione e' gestita dall'entita' Mentore
+    cascade -> le operazioni a cascata se salviamo/cancelliamo l'hackathon automaticamente viene salvato anche il mentore
+    orphanRemoval -> se rimuoviamo un mentore dalla lista mentori dell'hackathon, quel mentore viene elimanto dal db.
+     */
+    @OneToMany(mappedBy = "hackathon", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Mentore> mentori;
+
+    public Hackathon() {
+        id = UUID.randomUUID();
+        //this.giudice = new ArrayList<Giudice>();
+        this.mentori = new ArrayList<Mentore>();
+    }
+
+    public void setMentore(Mentore mentore) {
+        mentori.add(mentore);
+    }
 }
 
