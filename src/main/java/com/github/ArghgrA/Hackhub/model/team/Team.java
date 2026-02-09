@@ -1,5 +1,6 @@
 package com.github.ArghgrA.Hackhub.model.team;
 
+import com.github.ArghgrA.Hackhub.model.Invito;
 import com.github.ArghgrA.Hackhub.model.pagamento.Pagamento;
 import com.github.ArghgrA.Hackhub.model.pagamento.PagamentoKind;
 import com.github.ArghgrA.Hackhub.model.utente.MembroTeam;
@@ -27,6 +28,9 @@ public class Team {
     private List<Pagamento> metodiPagamento;
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MembroTeam> membri;
+
+    @OneToOne(mappedBy = "idTeam", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Invito invito;
 
     public Team(String nome, String logourl) {
         id = UUID.randomUUID();

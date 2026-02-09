@@ -1,5 +1,6 @@
 package com.github.ArghgrA.Hackhub.model.utente;
 
+import com.github.ArghgrA.Hackhub.model.Invito;
 import jakarta.persistence.*;
 import lombok.Generated;
 import lombok.Getter;
