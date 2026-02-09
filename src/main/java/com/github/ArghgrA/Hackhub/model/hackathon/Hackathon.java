@@ -3,6 +3,7 @@ import com.github.ArghgrA.Hackhub.model.posizione.Posizione;
 import com.github.ArghgrA.Hackhub.model.utente.staff.Giudice;
 import com.github.ArghgrA.Hackhub.model.utente.staff.Mentore;
 import com.github.ArghgrA.Hackhub.model.premio.Premio;
+import com.github.ArghgrA.Hackhub.model.utente.staff.Organizzatore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -99,6 +100,10 @@ public class Hackathon {
      */
     @OneToMany(mappedBy = "hackathon", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Mentore> mentori;
+
+    @ManyToOne
+    @JoinColumn(name = "organizzatore_id")
+    private Organizzatore organizzatore;
 
     public Hackathon() {
         id = UUID.randomUUID();
