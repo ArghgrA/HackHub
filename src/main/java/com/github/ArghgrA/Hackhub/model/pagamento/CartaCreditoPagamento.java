@@ -16,5 +16,6 @@ import java.util.UUID;
 @Setter
 @Entity
 public class CartaCreditoPagamento extends Pagamento{
+
     private String iban;
 }

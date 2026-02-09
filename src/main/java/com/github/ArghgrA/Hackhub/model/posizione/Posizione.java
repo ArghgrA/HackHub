@@ -6,10 +6,12 @@ package com.github.ArghgrA.Hackhub.model.posizione;
 import com.github.ArghgrA.Hackhub.model.hackathon.Hackathon;
 import com.github.ArghgrA.Hackhub.model.pagamento.PagamentoKind;
 import jakarta.persistence.*;
+import lombok.Getter;
 import lombok.Setter;
 
 import java.util.UUID;
 @Entity
+@Getter
 @Setter
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Posizione{

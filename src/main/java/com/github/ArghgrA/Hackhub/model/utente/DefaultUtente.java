@@ -1,7 +1,9 @@
 package com.github.ArghgrA.Hackhub.model.utente;
 
 import com.github.ArghgrA.Hackhub.model.Invito;
+import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
@@ -14,11 +16,12 @@ import java.util.List;
  * </p>
  */
 @Getter
+@Entity
 public class DefaultUtente extends AbstractUtente {
-
     /**
      * Lista degli inviti ricevuti dall'utente.
      */
+    @OneToMany(mappedBy = "utenteInvitato", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Invito> inviti;
 }
 

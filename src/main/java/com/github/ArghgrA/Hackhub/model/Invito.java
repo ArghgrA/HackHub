@@ -1,13 +1,13 @@
 package com.github.ArghgrA.Hackhub.model;
 
 import com.github.ArghgrA.Hackhub.model.team.Team;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
+import com.github.ArghgrA.Hackhub.model.utente.AbstractUtente;
+import com.github.ArghgrA.Hackhub.model.utente.DefaultUtente;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import lombok.Setter;
 
 import java.util.UUID;
 
@@ -18,22 +18,30 @@ import java.util.UUID;
  * i riferimenti all'utente destinatario, al team che ha inviato l'invito e un messaggio testuale opzionale.
  */
 @Getter
+@Setter
+@NoArgsConstructor
+@Entity
 public class Invito {
     /**
      * Identificatore univoco dell'invito, generato automaticamente al momento della creazione.
      */
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     /**
      * Identificatore del team che ha inviato l'invito.
      */
-
-    private UUID idTeam;
+    @OneToOne
+    @JoinColumn(name= "team_id")
+    private Team idTeam;
 
     /**
      * Identificatore dell'utente a cui è rivolto l'invito.
      */
-    private UUID idUtente;
+    @ManyToOne
+    @JoinColumn(name = "utente_id")
+    private DefaultUtente utenteInvitato;
 
     /**
      * Messaggio testuale associato all'invito (può contenere informazioni aggiuntive o personalizzate).
@@ -45,13 +53,13 @@ public class Invito {
      * L'ID dell'invito viene generato automaticamente tramite {@link UUID#randomUUID()}.
      *
      * @param idTeam   identificatore del team che invia l'invito (non null)
-     * @param idUtente identificatore dell'utente destinatario (non null)
+     * @param utenteInvitato identificatore dell'utente destinatario (non null)
      * @param testo    messaggio testuale dell'invito (se null allora stringa vuota)
      */
-    public Invito(@NonNull  UUID idTeam, @NonNull UUID idUtente, String testo) {
+    public Invito(@NonNull  Team idTeam, @NonNull DefaultUtente utenteInvitato, String testo) {
         this.id = UUID.randomUUID();
         this.idTeam = idTeam;
-        this.idUtente = idUtente;
+        this.utenteInvitato = utenteInvitato;
         this.testo = (testo == null ? "" : testo);
     }
 }
