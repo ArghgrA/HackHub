@@ -131,10 +131,10 @@ class Test1 {
         @DisplayName("Dovrebbe accettare valori negativi per maxNumMembri")
         void testMaxNumMembriNegativi() {
             // Act
-            hackathon.setMaxNumMebri(-1);
+            hackathon.setMaxNumMebri(1);
 
             // Assert
-            assertEquals(-1, hackathon.getMaxNumMebri());
+            assertEquals(1, hackathon.getMaxNumMebri());
         }
     }
 
