@@ -7,7 +7,7 @@ import lombok.Getter;
 import java.util.UUID;
 
 @Getter
-@MappedSuperclass
+@Entity @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class AbstractUser implements User<UUID> {
     @Id @GeneratedValue(strategy = GenerationType.UUID)
     UUID id;
