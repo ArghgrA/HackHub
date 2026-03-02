@@ -1,0 +1,12 @@
+2026-03-02 10:21:47.045683+01:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "create table [*]interval (id uuid not null, primary key (id))"; expected "identifier"; SQL statement:
+create table interval (id uuid not null, primary key (id)) [42001-240]
+2026-03-02 10:21:47.054979+01:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "alter table if exists abstract_hackathon add constraint FK2f68h1yb5khawfcuohv7y4too foreign key (interval_id) references [*]interval"; expected "identifier"; SQL statement:
+alter table if exists abstract_hackathon add constraint FK2f68h1yb5khawfcuohv7y4too foreign key (interval_id) references interval [42001-240]
+2026-03-02 10:23:31.368989+01:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "create table [*]interval (id uuid not null, primary key (id))"; expected "identifier"; SQL statement:
+create table interval (id uuid not null, primary key (id)) [42001-240]
+2026-03-02 10:23:31.375429+01:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "alter table if exists abstract_hackathon add constraint FK2f68h1yb5khawfcuohv7y4too foreign key (interval_id) references [*]interval"; expected "identifier"; SQL statement:
+alter table if exists abstract_hackathon add constraint FK2f68h1yb5khawfcuohv7y4too foreign key (interval_id) references interval [42001-240]

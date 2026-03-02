@@ -9,7 +9,7 @@ import lombok.Getter;
 import java.util.UUID;
 
 @Getter
-@MappedSuperclass
+@Entity @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class AbstractInvite implements Invite<UUID> {
     @Id @GeneratedValue(strategy = GenerationType.UUID)
     UUID id;

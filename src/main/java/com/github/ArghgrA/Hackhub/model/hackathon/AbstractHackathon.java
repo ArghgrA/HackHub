@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Getter
-@MappedSuperclass
+@Entity @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class AbstractHackathon implements Hackathon<UUID> {
     @Id @GeneratedValue(strategy = GenerationType.UUID)
     UUID id;
