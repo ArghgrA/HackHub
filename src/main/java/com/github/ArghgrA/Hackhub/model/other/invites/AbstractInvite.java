@@ -13,9 +13,12 @@ import java.util.UUID;
 public abstract class AbstractInvite implements Invite<UUID> {
     @Id @GeneratedValue(strategy = GenerationType.UUID)
     UUID id;
+
     @ManyToOne @JoinColumn(name = "team_id")
     DefaultTeam team;
+
     @ManyToOne @JoinColumn(name = "user_id")
     DefaultUser user;
+
     String text;
 }

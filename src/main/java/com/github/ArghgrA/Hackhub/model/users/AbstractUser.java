@@ -11,8 +11,12 @@ import java.util.UUID;
 public abstract class AbstractUser implements User<UUID> {
     @Id @GeneratedValue(strategy = GenerationType.UUID)
     UUID id;
+
     String name;
+
     String username;
+
     String email;
+
     String password;
 }

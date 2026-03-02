@@ -14,7 +14,9 @@ import java.util.UUID;
 public abstract class AbstractTeam implements Team<UUID> {
     @Id @GeneratedValue(strategy = GenerationType.UUID)
     UUID id;
-    String name;
+
     @OneToMany(mappedBy = "id")
     List<TeamMember> members;
+
+    String name;
 }

@@ -4,6 +4,10 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+### HIBERNATE ###
+/hackhubdb.mv.db
+/hackhubdb.trace.db
+
 ### STS ###
 .apt_generated
 .classpath
