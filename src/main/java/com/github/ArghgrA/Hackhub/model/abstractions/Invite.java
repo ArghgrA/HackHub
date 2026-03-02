@@ -1,6 +1,6 @@
 package com.github.ArghgrA.Hackhub.model.abstractions;
 
-public interface Invito<I extends Comparable<I>> {
+public interface Invite<I extends Comparable<I>> {
     I getId();
     Team<I> getTeam();
     User<I> getUser();

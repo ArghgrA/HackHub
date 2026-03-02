@@ -1,4 +1,8 @@
 package com.github.ArghgrA.Hackhub.model.users.staff;
 
-public class Organizer extends AbstractStaff {
+import com.github.ArghgrA.Hackhub.model.hackathon.AbstractHackathon;
+import jakarta.persistence.Entity;
+
+@Entity
+public class Organizer extends AbstractStaff<AbstractHackathon> {
 }
