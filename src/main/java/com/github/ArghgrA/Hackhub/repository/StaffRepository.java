@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;
 
-public interface StaffRepository<H extends Hackathon<UUID>, T extends AbstractStaff<H>> extends JpaRepository<T, UUID> {
+public interface StaffRepository<T extends AbstractStaff> extends JpaRepository<T, UUID> {
 }

@@ -4,19 +4,23 @@ import com.github.ArghgrA.Hackhub.model.abstractions.Team;
 import com.github.ArghgrA.Hackhub.model.abstractions.User;
 import com.github.ArghgrA.Hackhub.model.users.TeamMember;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 import java.util.UUID;
 
-@Getter
+@NoArgsConstructor @Getter @Setter
 @Entity @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class AbstractTeam implements Team<UUID> {
+    @Setter(AccessLevel.NONE)
     @Id @GeneratedValue(strategy = GenerationType.UUID)
-    UUID id;
+    private UUID id;
 
     @OneToMany(mappedBy = "id")
-    List<TeamMember> members;
+    private List<TeamMember> members;
 
-    String name;
+    private String name;
 }

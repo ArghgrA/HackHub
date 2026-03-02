@@ -6,12 +6,14 @@ import com.github.ArghgrA.Hackhub.model.hackathon.AbstractHackathon;
 import com.github.ArghgrA.Hackhub.model.users.AbstractUser;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.UUID;
 
-@Getter
-@MappedSuperclass
-public abstract class AbstractStaff<H extends Hackathon<UUID>> extends AbstractUser implements Staff<UUID,H> {
+@Getter @Setter
+@Entity @Inheritance(strategy = InheritanceType.JOINED)
+public abstract class AbstractStaff extends AbstractUser implements Staff<UUID,AbstractHackathon> {
     @ManyToOne @JoinColumn(name = "hackathon_id")
-    H hackathon;
+    AbstractHackathon hackathon;
 }

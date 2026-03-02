@@ -2,21 +2,25 @@ package com.github.ArghgrA.Hackhub.model.users;
 
 import com.github.ArghgrA.Hackhub.model.abstractions.User;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.UUID;
 
-@Getter
 @Entity @Inheritance(strategy = InheritanceType.JOINED)
+@Getter @Setter
 public abstract class AbstractUser implements User<UUID> {
+    @Setter(AccessLevel.NONE)
     @Id @GeneratedValue(strategy = GenerationType.UUID)
-    UUID id;
+    private UUID id;
 
-    String name;
+    private String name;
 
-    String username;
+    private String username;
 
-    String email;
+    private String email;
 
-    String password;
+    private String password;
 }

@@ -5,29 +5,33 @@ import com.github.ArghgrA.Hackhub.model.other.Interval;
 import com.github.ArghgrA.Hackhub.model.users.staff.Judge;
 import com.github.ArghgrA.Hackhub.model.users.staff.Mentor;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 import java.util.UUID;
 
-@Getter
+@NoArgsConstructor @Getter @Setter
 @Entity @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class AbstractHackathon implements Hackathon<UUID> {
+    @Setter(AccessLevel.NONE)
     @Id @GeneratedValue(strategy = GenerationType.UUID)
-    UUID id;
+    private UUID id;
 
     @OneToOne @JoinColumn(name = "interval_id")
-    Interval intervallo;
+    private Interval intervallo;
 
     @OneToOne @JoinColumn(name = "judge_id")
-    Judge judge;
+    private Judge judge;
 
     @OneToMany(mappedBy = "id")
-    List<Mentor> mentors;
+    private List<Mentor> mentors;
 
-    String name;
+    private String name;
 
-    String rule;
+    private String rule;
 
-    Integer maxTeamMembers;
+    private Integer maxTeamMembers;
 }
