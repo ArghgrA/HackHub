@@ -1,6 +1,6 @@
 package com.github.ArghgrA.Hackhub.handler;
 
-import com.github.ArghgrA.Hackhub.Mapper.JudgeMapper;
+import com.github.ArghgrA.Hackhub.dto.Mapper.JudgeOldMapper;
 import com.github.ArghgrA.Hackhub.dto.DTOCreazione.AddStaffDTO;
 import com.github.ArghgrA.Hackhub.dto.DTOResponse.StaffResponseDTO;
 import com.github.ArghgrA.Hackhub.model.users.staff.Judge;
@@ -10,20 +10,20 @@ import org.springframework.stereotype.Service;
 @Service
 public class JudgeHandler {
     private UserRepository<Judge> judgeRepository;
-    private JudgeMapper judgeMapper;
+    private JudgeOldMapper judgeOldMapper;
 
-    public JudgeHandler(UserRepository<Judge> judgeRepository, JudgeMapper judgeMapper) {
+    public JudgeHandler(UserRepository<Judge> judgeRepository, JudgeOldMapper judgeOldMapper) {
         this.judgeRepository = judgeRepository;
-        this.judgeMapper = judgeMapper;
+        this.judgeOldMapper = judgeOldMapper;
     }
 
     public StaffResponseDTO createJudge(AddStaffDTO dto) {
-        Judge judge = judgeMapper.toEntity(dto);
+        Judge judge = judgeOldMapper.toEntity(dto);
 
         judge.setPassword(dto.password());
 
         Judge saved = judgeRepository.save(judge);
-        return judgeMapper.toDTO(saved);
+        return judgeOldMapper.toDTO(saved);
     }
 
     //Qui andremo a fare le altre operazioni CRUD che coinvolgono il Judge

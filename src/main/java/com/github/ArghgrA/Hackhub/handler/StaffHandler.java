@@ -1,7 +1,6 @@
 package com.github.ArghgrA.Hackhub.handler;
 
-import com.github.ArghgrA.Hackhub.Mapper.JudgeMapper;
-import com.github.ArghgrA.Hackhub.Mapper.StaffMapper;
+import com.github.ArghgrA.Hackhub.dto.Mapper.StaffMapper;
 import com.github.ArghgrA.Hackhub.dto.DTOCreazione.AddStaffDTO;
 import com.github.ArghgrA.Hackhub.dto.DTOResponse.StaffResponseDTO;
 import com.github.ArghgrA.Hackhub.model.hackathon.AbstractHackathon;
@@ -16,7 +15,6 @@ import java.util.UUID;
 @Service
 public class StaffHandler {
     private UserRepository<AbstractStaff> userRepository;
-    private JudgeMapper judgeMapper;
     HackathonRepository<DefaultHackathon> hackathonRepository;
     private StaffMapper staffMapper;
 
@@ -41,7 +39,7 @@ public class StaffHandler {
         staff.setHackathon(hackathon);
 
         //salvo il tutto
-        AbstractStaff saved = (AbstractStaff) userRepository.save(staff);
+        AbstractStaff saved = userRepository.save(staff);
 
         //ritorno il dto
         return staffMapper.toDTO(saved);

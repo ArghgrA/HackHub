@@ -1,4 +1,4 @@
-package com.github.ArghgrA.Hackhub.Mapper;
+package com.github.ArghgrA.Hackhub.dto.Mapper;
 
 import com.github.ArghgrA.Hackhub.dto.DTOCreazione.AddStaffDTO;
 import com.github.ArghgrA.Hackhub.dto.DTOResponse.StaffResponseDTO;
@@ -6,7 +6,7 @@ import com.github.ArghgrA.Hackhub.model.users.staff.Judge;
 import org.springframework.stereotype.Component;
 
 @Component
-public class JudgeMapper {
+public class JudgeOldMapper {
     // Da DTO di creazione a Entity
     public Judge toEntity(AddStaffDTO dto) {
         Judge judge = new Judge();

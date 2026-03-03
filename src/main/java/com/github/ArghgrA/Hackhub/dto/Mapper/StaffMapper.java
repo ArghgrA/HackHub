@@ -1,4 +1,4 @@
-package com.github.ArghgrA.Hackhub.Mapper;
+package com.github.ArghgrA.Hackhub.dto.Mapper;
 
 import com.github.ArghgrA.Hackhub.dto.DTOCreazione.AddStaffDTO;
 import com.github.ArghgrA.Hackhub.dto.DTOResponse.StaffResponseDTO;

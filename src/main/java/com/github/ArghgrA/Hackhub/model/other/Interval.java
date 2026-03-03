@@ -9,11 +9,11 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@NoArgsConstructor @Getter @Setter
-@Entity @Table(name = "table_interval")
+//@NoArgsConstructor @Getter @Setter
+//@Entity @Table(name = "table_interval")
+@Embeddable
+@NoArgsConstructor
 public class Interval {
-    @Id @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
 
     private LocalDateTime registrationStart;
 
@@ -22,9 +22,6 @@ public class Interval {
     private LocalDateTime competitionStart;
 
     private LocalDateTime competitionEnd;
-
-    @OneToOne @JoinColumn(name = "hackathon_id")
-    private AbstractHackathon hackathon;
 
     public Interval(
             LocalDateTime registrationStart,

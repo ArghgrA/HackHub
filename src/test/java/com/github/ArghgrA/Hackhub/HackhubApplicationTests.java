@@ -10,6 +10,7 @@ import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Commit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -28,10 +29,10 @@ class HackhubApplicationTests {
 	@Test @Transactional
 	void contextLoads() {
 		var judge = new Judge();
-		judge.setName("Michele Loreti");
-		judge.setUsername("ML");
-		judge.setEmail("michele@loreti.ml");
-		judge.setPassword("sostituitodallAI21");
+		judge.setName("Mario Rossi");
+		judge.setUsername("MR");
+		judge.setEmail("mr@r.ml");
+		judge.setPassword("12345");
 
 		staffRepository.save(judge);
 

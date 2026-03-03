@@ -20,13 +20,14 @@ public abstract class AbstractHackathon implements Hackathon<UUID> {
     @Id @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @OneToOne @JoinColumn(name = "interval_id")
+    //@OneToOne @JoinColumn(name = "interval_id")
+    @Embedded
     private Interval intervallo;
 
     @OneToOne @JoinColumn(name = "judge_id")
     private Judge judge;
 
-    @OneToMany(mappedBy = "id")
+    @OneToMany(mappedBy = "hackathon")
     @Setter(AccessLevel.NONE)
     private List<Mentor> mentors;
 
@@ -38,6 +39,7 @@ public abstract class AbstractHackathon implements Hackathon<UUID> {
 
     @Embedded
     private HackathonState state;
+
 
     protected AbstractHackathon(){
         this.state = new UnactiveState();
