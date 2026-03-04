@@ -1,86 +1,112 @@
 package com.github.ArghgrA.Hackhub.handler;
 
-import com.github.ArghgrA.Hackhub.dto.DTOCreazione.addHackathonDTO;
-import com.github.ArghgrA.Hackhub.dto.DTOCreazione.addJudgeDTO;
-import com.github.ArghgrA.Hackhub.dto.DTOCreazione.addMentorDTO;
-import com.github.ArghgrA.Hackhub.dto.DTOCreazione.addTeamDTO;
-import com.github.ArghgrA.Hackhub.dto.DTOResponse.HackathonResponseDTO;
-import com.github.ArghgrA.Hackhub.dto.DTOResponse.TeamResponseDTO;
-import com.github.ArghgrA.Hackhub.dto.Mapper.HackathonMapper;
-import com.github.ArghgrA.Hackhub.dto.Mapper.JudgeMapper;
-import com.github.ArghgrA.Hackhub.dto.Mapper.MentorMapper;
-import com.github.ArghgrA.Hackhub.model.hackathon.AbstractHackathon;
+import com.github.ArghgrA.Hackhub.dto.mapper.AddMentorToHackathonMapper;
+import com.github.ArghgrA.Hackhub.dto.mapper.CreateHackathonMapper;
+import com.github.ArghgrA.Hackhub.dto.mapper.AddJudgeToHackathonMapper;
+import com.github.ArghgrA.Hackhub.dto.request.AddJudgeToHackathonRequestDTO;
+import com.github.ArghgrA.Hackhub.dto.request.AddMentorToHackathonRequestDTO;
+import com.github.ArghgrA.Hackhub.dto.request.CreateHackathonRequestDTO;
+import com.github.ArghgrA.Hackhub.dto.response.AddJudgeToHackathonResponseDTO;
+import com.github.ArghgrA.Hackhub.dto.response.AddMentorToHackathonResponseDTO;
+import com.github.ArghgrA.Hackhub.dto.response.CreateHackathonResponseDTO;
 import com.github.ArghgrA.Hackhub.model.hackathon.DefaultHackathon;
-import com.github.ArghgrA.Hackhub.model.team.AbstractTeam;
-import com.github.ArghgrA.Hackhub.model.users.AbstractUser;
-import com.github.ArghgrA.Hackhub.model.users.staff.AbstractStaff;
+import com.github.ArghgrA.Hackhub.model.hackathon.builder.DefaultHackathonBuilder;
+import com.github.ArghgrA.Hackhub.model.other.Interval;
 import com.github.ArghgrA.Hackhub.model.users.staff.Judge;
 import com.github.ArghgrA.Hackhub.model.users.staff.Mentor;
+import com.github.ArghgrA.Hackhub.model.users.staff.Organizer;
 import com.github.ArghgrA.Hackhub.repository.HackathonRepository;
 import com.github.ArghgrA.Hackhub.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
+@RequiredArgsConstructor
 public class HackathonHandler {
-    private HackathonRepository<AbstractHackathon> hackathonRepository;
+    private final HackathonRepository<DefaultHackathon> hackathonRepository;
+    private final UserRepository<Organizer> organizerRepository;
+    private final UserRepository<Judge> judgeRepository;
+    private final UserRepository<Mentor> mentorRepository;
+    private final CreateHackathonMapper createHackathonMapper;
+    private final AddJudgeToHackathonMapper judgeToHackathonMapper;
+    private final AddMentorToHackathonMapper mentorToHackathonMapper;
 
-    private HackathonMapper hackathonMapper;
+    public CreateHackathonResponseDTO createHackathon(CreateHackathonRequestDTO dto) {
+        Organizer organizer = organizerRepository
+                .findById(dto.organizerId())
+                .orElseThrow(() -> new RuntimeException("No Organizer with that id"));
 
-    private UserRepository<AbstractUser> userRepository;
+        // check if organizer is already registered in one Hackathon
+        Optional<DefaultHackathon> alreadyExistingHackathon = hackathonRepository.findHackathonByStaff(organizer.getId());
+        if(alreadyExistingHackathon.isPresent()) throw new RuntimeException("Organizer is already subscribed to an hackathon");
 
-    private JudgeMapper judgeMapper;
+        // create an Interval. throw Execption if not respect Constraints
+        Interval hackathonInterval = new Interval(
+                dto.registrationStart(),
+                dto.registrationEnd(),
+                dto.competitionStart(),
+                dto.competitionEnd()
+        );
 
-    private MentorMapper mentorMapper;
-    public HackathonHandler(
-            HackathonRepository<AbstractHackathon> hackathonRepository,
-            HackathonMapper hackathonMapper,
-            UserRepository<AbstractUser> userRepository,
-            JudgeMapper judgeMapper,
-            MentorMapper mentorMapper
-    ) {
-        this.hackathonRepository = hackathonRepository;
-        this.hackathonMapper = hackathonMapper;
-        this.userRepository = userRepository;
-        this.judgeMapper = judgeMapper;
-        this.mentorMapper = mentorMapper;
+        // build new hackathon with Builder
+        DefaultHackathonBuilder builder = new DefaultHackathonBuilder();
+        DefaultHackathon hackathon = builder
+                .setName(dto.name())
+                .setRule(dto.rule())
+                .setInterval(hackathonInterval)
+                .setMaxTeamMembers(dto.maxTeamMembers())
+                .setOrganizer(organizer)
+                .getResult();
+
+        organizer.setHackathon(hackathon);
+
+        hackathonRepository.save(hackathon);
+
+        return createHackathonMapper.toResponse(hackathon);
     }
 
-    public HackathonResponseDTO creaHackathon(addHackathonDTO dto){
-        AbstractHackathon hackathon = hackathonMapper.toEntiy(dto);
-        AbstractHackathon saved = hackathonRepository.save(hackathon);
-        return hackathonMapper.toDTO(saved);
+    public AddJudgeToHackathonResponseDTO addJudge(AddJudgeToHackathonRequestDTO dto) {
+        // check if Judge exist
+        Judge judge = judgeRepository
+                .findById(dto.idJudge())
+                .orElseThrow(() -> new RuntimeException("no judge with this id"));
+
+        // check if Hackathon exist
+        DefaultHackathon hackathon = hackathonRepository
+                        .findById(dto.idHackathon())
+                        .orElseThrow(() -> new RuntimeException("no hackathon with this id"));
+
+        // check if judge is already in one hackathon
+        Optional<DefaultHackathon> alreadyExistingHackathon = hackathonRepository.findHackathonByStaff(judge.getId());
+        if(alreadyExistingHackathon.isPresent()) throw new IllegalStateException("Judge is already subscribed to an hackathon");
+
+        // add Judge to Hackathon
+        hackathon.addStaff(judge);
+        hackathonRepository.save(hackathon);
+
+        return judgeToHackathonMapper.toResponse(judge);
     }
 
-    public void addJudgeToHackathon(addJudgeDTO dto) {
-        Judge judge = (Judge) userRepository.findById(dto.judgeId())
-                .orElseThrow(() -> new RuntimeException("Judge not found"));
+    public AddMentorToHackathonResponseDTO addMentor(AddMentorToHackathonRequestDTO dto) {
+        // check if Mentor exist
+        Mentor mentor = mentorRepository
+                .findById(dto.idMentor())
+                .orElseThrow(() -> new RuntimeException("no mentor with this id"));
 
-        AbstractHackathon hackathon = hackathonRepository.findById(dto.hackathonId())
-                .orElseThrow(() -> new RuntimeException("Hackathon not found"));
+        DefaultHackathon hackathon = hackathonRepository
+                .findById(dto.idHackathon())
+                .orElseThrow(() -> new RuntimeException("no hackathon with this id"));
 
-        if (judge.getHackathon() != null) {
-            throw new IllegalStateException("Judge is already assigned to a hackathon");
-        }
+        // check if judge is already in one hackathon
+        Optional<DefaultHackathon> alreadyExistingHackathon = hackathonRepository.findHackathonByStaff(mentor.getId());
+        if(alreadyExistingHackathon.isPresent()) throw new IllegalStateException("Mentor is already subscribed to an hackathon");
 
-        judgeMapper.fromDTO(dto, judge, hackathon);
+        // add Mentor to Hackathon
+        hackathon.addStaff(mentor);
+        hackathonRepository.save(hackathon);
 
-        userRepository.save(judge);
-    }
-
-    public void addMentorToHackathon(addMentorDTO dto) {
-
-        Mentor mentor = (Mentor) userRepository.findById(dto.mentorId())
-                .orElseThrow(() -> new RuntimeException("Mentor not found"));
-
-        AbstractHackathon hackathon = hackathonRepository.findById(dto.hackathonId())
-                .orElseThrow(() -> new RuntimeException("Hackathon not found"));
-
-        if (mentor.getHackathon() != null) {
-            throw new IllegalStateException("Mentor is already assigned to a hackathon");
-        }
-
-        mentorMapper.fromDTO(dto, mentor, hackathon);
-
-        userRepository.save(mentor);
+        return mentorToHackathonMapper.toResponse(mentor);
     }
 }

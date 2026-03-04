@@ -10,7 +10,7 @@ public interface Hackathon<I extends Comparable<I>> {
     I getId();
     String getName();
     String getRule();
-    Interval getIntervallo();
+    Interval getInterval();
     Integer getMaxTeamMembers();
     Judge getJudge();
     List<Mentor> getMentors();

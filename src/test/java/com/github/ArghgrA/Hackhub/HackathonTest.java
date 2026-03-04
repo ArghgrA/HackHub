@@ -6,6 +6,8 @@ import com.github.ArghgrA.Hackhub.model.users.staff.Judge;
 import com.github.ArghgrA.Hackhub.model.users.staff.Mentor;
 import com.github.ArghgrA.Hackhub.repository.HackathonRepository;
 import com.github.ArghgrA.Hackhub.repository.UserRepository;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,9 @@ public class HackathonTest {
 
     @Autowired
     UserRepository<Mentor> mentorRepository;
+
+    @Autowired
+    EntityManager entityManager;
 
     @Test
     @Transactional
@@ -51,14 +56,17 @@ public class HackathonTest {
         hackathon.setName("Hackathon");
         hackathon.setRule("usa l'ai");
         hackathon.setMaxTeamMembers(10);
-        hackathon.addJudge(judge);
-        hackathon.addMentor(mentor);
-        hackathon.setIntervallo(null);
+        hackathon.addStaff(judge);
+        hackathon.addStaff(mentor);
+        hackathon.setInterval(null);
 
         hackathonRepository.save(hackathon);
 
         var hackathon2 = hackathonRepository.findById(hackathon.getId()).orElse(null);
 
+
+        entityManager.flush();
+        entityManager.clear();
 
         assertNotEquals(null,hackathon2);
         assertEquals(hackathon.getId(), hackathon2.getId());
@@ -67,7 +75,7 @@ public class HackathonTest {
         assertEquals(hackathon.getMaxTeamMembers(), hackathon2.getMaxTeamMembers());
         assertEquals(judge, hackathon2.getJudge());
         assertEquals(mentor, hackathon2.getMentors().getFirst());
-        assertEquals(hackathon.getIntervallo(), hackathon2.getIntervallo());
+        assertEquals(hackathon.getInterval(), hackathon2.getInterval());
         assertEquals(hackathon.getState(),hackathon2.getState());
 
     }

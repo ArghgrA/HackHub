@@ -24,5 +24,5 @@ public abstract class AbstractInvite implements Invite<UUID> {
     @ManyToOne @JoinColumn(name = "user_id")
     private DefaultUser user;
 
-    private String text;
+    private String message;
 }

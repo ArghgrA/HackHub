@@ -3,6 +3,7 @@ package com.github.ArghgrA.Hackhub;
 import com.github.ArghgrA.Hackhub.model.other.invites.DefaultInvite;
 import com.github.ArghgrA.Hackhub.model.team.DefaultTeam;
 import com.github.ArghgrA.Hackhub.model.users.staff.Judge;
+import com.github.ArghgrA.Hackhub.model.users.staff.Organizer;
 import com.github.ArghgrA.Hackhub.repository.InviteRepository;
 import com.github.ArghgrA.Hackhub.repository.TeamRepository;
 import com.github.ArghgrA.Hackhub.repository.UserRepository;
@@ -26,7 +27,10 @@ class HackhubApplicationTests {
 	@Autowired
 	UserRepository<Judge> staffRepository;
 
-	@Test @Transactional
+	@Autowired
+	UserRepository<Organizer> organizerRepository;
+
+	@Test @Commit
 	void contextLoads() {
 		var judge = new Judge();
 		judge.setName("Mario Rossi");
@@ -43,6 +47,15 @@ class HackhubApplicationTests {
 		assertEquals(judge.getUsername(),judge2.getUsername());
 		assertEquals(judge.getEmail(),judge2.getEmail());
 		assertEquals(judge.getPassword(),judge2.getPassword());
+
+		var organizer = new Organizer();
+		organizer.setName("something");
+		organizer.setUsername("smthg");
+		organizer.setEmail("smth@smth");
+		organizer.setPassword("12345");
+
+		organizerRepository.save(organizer);
+
 	}
 
 }

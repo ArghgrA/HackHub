@@ -4,8 +4,10 @@ import com.github.ArghgrA.Hackhub.model.abstractions.Hackathon;
 import com.github.ArghgrA.Hackhub.model.hackathon.state.HackathonState;
 import com.github.ArghgrA.Hackhub.model.hackathon.state.UnactiveState;
 import com.github.ArghgrA.Hackhub.model.other.Interval;
+import com.github.ArghgrA.Hackhub.model.users.staff.AbstractStaff;
 import com.github.ArghgrA.Hackhub.model.users.staff.Judge;
 import com.github.ArghgrA.Hackhub.model.users.staff.Mentor;
+import com.github.ArghgrA.Hackhub.model.users.staff.Organizer;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,13 +24,15 @@ public abstract class AbstractHackathon implements Hackathon<UUID> {
 
     //@OneToOne @JoinColumn(name = "interval_id")
     @Embedded
-    private Interval intervallo;
+    private Interval interval;
+
+    @OneToOne @JoinColumn(name = "organizer_id")
+    private Organizer organizer;
 
     @OneToOne @JoinColumn(name = "judge_id")
     private Judge judge;
 
     @OneToMany(mappedBy = "hackathon")
-    @Setter(AccessLevel.NONE)
     private List<Mentor> mentors;
 
     private String name;
@@ -40,22 +44,18 @@ public abstract class AbstractHackathon implements Hackathon<UUID> {
     @Embedded
     private HackathonState state;
 
+    public void addStaff(AbstractStaff s) {
+        if(s == null) return;
+        s.setHackathon(this);
 
-    protected AbstractHackathon(){
-        this.state = new UnactiveState();
-        this.mentors = new LinkedList<>();
+        switch (s) {
+            case Organizer o -> this.organizer = o;
+            case Judge j -> this.judge = j;
+            case Mentor m -> {
+                if (this.mentors == null) this.mentors = new LinkedList<>();
+                if (!this.mentors.contains(m)) this.mentors.add(m);
+            }
+            default -> throw new IllegalArgumentException("");
+        }
     }
-
-    public void addMentor(Mentor m){
-        if(mentors.contains(m)) return;
-        this.mentors.add(m);
-        m.setHackathon(this);
-    }
-
-    public void addJudge(Judge j){
-        this.judge = j;
-        j.setHackathon(this);
-    }
-
-
 }
