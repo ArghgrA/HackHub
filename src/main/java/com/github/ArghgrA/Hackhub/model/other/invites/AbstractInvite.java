@@ -1,8 +1,9 @@
 package com.github.ArghgrA.Hackhub.model.other.invites;
 
-import com.github.ArghgrA.Hackhub.model.abstractions.Invite;
+import com.github.ArghgrA.Hackhub.model.abstraction.Invite;
+import com.github.ArghgrA.Hackhub.model.team.AbstractTeam;
 import com.github.ArghgrA.Hackhub.model.team.DefaultTeam;
-import com.github.ArghgrA.Hackhub.model.users.DefaultUser;
+import com.github.ArghgrA.Hackhub.model.user.DefaultUser;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -19,10 +20,10 @@ public abstract class AbstractInvite implements Invite<UUID> {
     private UUID id;
 
     @ManyToOne @JoinColumn(name = "team_id")
-    private DefaultTeam team;
+    private AbstractTeam team;
 
     @ManyToOne @JoinColumn(name = "user_id")
     private DefaultUser user;
 
-    private String text;
+    private String message;
 }

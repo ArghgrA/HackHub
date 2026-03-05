@@ -1,11 +1,12 @@
 package com.github.ArghgrA.Hackhub.model.hackathon;
 
-import com.github.ArghgrA.Hackhub.model.abstractions.Hackathon;
+import com.github.ArghgrA.Hackhub.model.abstraction.Hackathon;
 import com.github.ArghgrA.Hackhub.model.hackathon.state.HackathonState;
-import com.github.ArghgrA.Hackhub.model.hackathon.state.UnactiveState;
 import com.github.ArghgrA.Hackhub.model.other.Interval;
-import com.github.ArghgrA.Hackhub.model.users.staff.Judge;
-import com.github.ArghgrA.Hackhub.model.users.staff.Mentor;
+import com.github.ArghgrA.Hackhub.model.user.staff.AbstractStaff;
+import com.github.ArghgrA.Hackhub.model.user.staff.Judge;
+import com.github.ArghgrA.Hackhub.model.user.staff.Mentor;
+import com.github.ArghgrA.Hackhub.model.user.staff.Organizer;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,14 +21,18 @@ public abstract class AbstractHackathon implements Hackathon<UUID> {
     @Id @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @OneToOne @JoinColumn(name = "interval_id")
-    private Interval intervallo;
+    @Embedded
+    private Interval interval;
 
+    @Setter(AccessLevel.NONE)
+    @OneToOne @JoinColumn(name = "organizer_id")
+    private Organizer organizer;
+
+    @Setter(AccessLevel.NONE)
     @OneToOne @JoinColumn(name = "judge_id")
     private Judge judge;
 
-    @OneToMany(mappedBy = "id")
-    @Setter(AccessLevel.NONE)
+    @OneToMany(mappedBy = "hackathon")
     private List<Mentor> mentors;
 
     private String name;
@@ -39,21 +44,18 @@ public abstract class AbstractHackathon implements Hackathon<UUID> {
     @Embedded
     private HackathonState state;
 
-    protected AbstractHackathon(){
-        this.state = new UnactiveState();
-        this.mentors = new LinkedList<>();
+    public void addStaff(AbstractStaff s) {
+        if(s == null) return;
+        s.setHackathon(this);
+
+        switch (s) {
+            case Organizer o -> this.organizer = o;
+            case Judge j -> this.judge = j;
+            case Mentor m -> {
+                if (this.mentors == null) this.mentors = new LinkedList<>();
+                if (!this.mentors.contains(m)) this.mentors.add(m);
+            }
+            default -> throw new IllegalArgumentException("");
+        }
     }
-
-    public void addMentor(Mentor m){
-        if(mentors.contains(m)) return;
-        this.mentors.add(m);
-        m.setHackathon(this);
-    }
-
-    public void addJudge(Judge j){
-        this.judge = j;
-        j.setHackathon(this);
-    }
-
-
 }
