@@ -3,9 +3,11 @@ package com.github.ArghgrA.Hackhub.handler;
 import com.github.ArghgrA.Hackhub.dto.mapper.InviteUserMapper;
 import com.github.ArghgrA.Hackhub.dto.request.InviteUserRequestDTO;
 import com.github.ArghgrA.Hackhub.dto.response.InviteUserResponseDTO;
+import com.github.ArghgrA.Hackhub.exception.AlreadyExistingException;
+import com.github.ArghgrA.Hackhub.exception.EntityNotFoundException;
 import com.github.ArghgrA.Hackhub.model.other.invites.DefaultInvite;
 import com.github.ArghgrA.Hackhub.model.team.DefaultTeam;
-import com.github.ArghgrA.Hackhub.model.users.DefaultUser;
+import com.github.ArghgrA.Hackhub.model.user.DefaultUser;
 import com.github.ArghgrA.Hackhub.repository.InviteRepository;
 import com.github.ArghgrA.Hackhub.repository.TeamRepository;
 import com.github.ArghgrA.Hackhub.repository.UserRepository;
@@ -26,17 +28,17 @@ public class InviteHandler {
         // check if invited user exist
         DefaultUser user = userRepository
                 .findById(request.userId())
-                .orElseThrow();
+                .orElseThrow(() -> new EntityNotFoundException("User not exist"));
 
         // check if team exist
         // ( should never throw error since a TeamMember is always in a Team )
         DefaultTeam team = teamRepository
                 .findById(request.teamId())
-                .orElseThrow();
+                .orElseThrow(() -> new EntityNotFoundException("Team not exist"));
 
         // check if the user was already invited by another TeamMember of the same team
         Optional<DefaultInvite> alreadyExistingInvite = inviteRepository.findInviteByTeam(request.userId(),request.teamId());
-        if(alreadyExistingInvite.isPresent()) throw new RuntimeException("an invite already exist for this user from the team");
+        if(alreadyExistingInvite.isPresent()) throw new AlreadyExistingException("User already invited from Team");
 
         // create new invite with previous data
         DefaultInvite newInvite = new DefaultInvite();

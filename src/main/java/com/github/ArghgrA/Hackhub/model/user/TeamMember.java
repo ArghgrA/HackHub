@@ -1,4 +1,4 @@
-package com.github.ArghgrA.Hackhub.model.users;
+package com.github.ArghgrA.Hackhub.model.user;
 
 import com.github.ArghgrA.Hackhub.model.team.DefaultTeam;
 import jakarta.persistence.Entity;
@@ -17,7 +17,7 @@ public class TeamMember extends AbstractUser {
     private DefaultTeam team;
 
     @Override @SuppressWarnings("all")
-    public <T extends AbstractUser> T prototype(Class<T> type) {
+    public <T extends AbstractUser> T transform(Class<T> type) {
         UnaryOperator<AbstractUser> copyFields = source -> {
             source.setName(super.getName());
             source.setUsername(super.getUsername());

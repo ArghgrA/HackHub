@@ -1,6 +1,6 @@
 package com.github.ArghgrA.Hackhub.repository;
 
-import com.github.ArghgrA.Hackhub.model.users.AbstractUser;
+import com.github.ArghgrA.Hackhub.model.user.AbstractUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

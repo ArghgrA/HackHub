@@ -1,13 +1,12 @@
 package com.github.ArghgrA.Hackhub.model.hackathon;
 
-import com.github.ArghgrA.Hackhub.model.abstractions.Hackathon;
+import com.github.ArghgrA.Hackhub.model.abstraction.Hackathon;
 import com.github.ArghgrA.Hackhub.model.hackathon.state.HackathonState;
-import com.github.ArghgrA.Hackhub.model.hackathon.state.UnactiveState;
 import com.github.ArghgrA.Hackhub.model.other.Interval;
-import com.github.ArghgrA.Hackhub.model.users.staff.AbstractStaff;
-import com.github.ArghgrA.Hackhub.model.users.staff.Judge;
-import com.github.ArghgrA.Hackhub.model.users.staff.Mentor;
-import com.github.ArghgrA.Hackhub.model.users.staff.Organizer;
+import com.github.ArghgrA.Hackhub.model.user.staff.AbstractStaff;
+import com.github.ArghgrA.Hackhub.model.user.staff.Judge;
+import com.github.ArghgrA.Hackhub.model.user.staff.Mentor;
+import com.github.ArghgrA.Hackhub.model.user.staff.Organizer;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,13 +21,14 @@ public abstract class AbstractHackathon implements Hackathon<UUID> {
     @Id @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    //@OneToOne @JoinColumn(name = "interval_id")
     @Embedded
     private Interval interval;
 
+    @Setter(AccessLevel.NONE)
     @OneToOne @JoinColumn(name = "organizer_id")
     private Organizer organizer;
 
+    @Setter(AccessLevel.NONE)
     @OneToOne @JoinColumn(name = "judge_id")
     private Judge judge;
 

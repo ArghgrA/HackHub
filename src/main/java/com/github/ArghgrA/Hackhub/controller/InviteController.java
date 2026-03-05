@@ -18,7 +18,7 @@ public class InviteController {
     @Autowired
     private InviteHandler inviteHandler;
 
-    @PostMapping("/add")
+    @PostMapping("/new")
     public ResponseEntity<InviteUserResponseDTO> addInvite(@Valid @RequestBody InviteUserRequestDTO dto) {
         InviteUserResponseDTO response = inviteHandler.inviteUser(dto);
         return ResponseEntity.status(HttpStatus.OK).body(response);

@@ -1,9 +1,9 @@
-package com.github.ArghgrA.Hackhub.model.users;
+package com.github.ArghgrA.Hackhub.model.user;
 
-import com.github.ArghgrA.Hackhub.model.abstractions.User;
-import com.github.ArghgrA.Hackhub.model.users.staff.Judge;
-import com.github.ArghgrA.Hackhub.model.users.staff.Mentor;
-import com.github.ArghgrA.Hackhub.model.users.staff.Organizer;
+import com.github.ArghgrA.Hackhub.model.abstraction.User;
+import com.github.ArghgrA.Hackhub.model.user.staff.Judge;
+import com.github.ArghgrA.Hackhub.model.user.staff.Mentor;
+import com.github.ArghgrA.Hackhub.model.user.staff.Organizer;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -26,7 +26,7 @@ public abstract class AbstractUser implements User<UUID> {
     private String password;
 
     @SuppressWarnings("all")
-    public <T extends AbstractUser> T prototype(Class<T> type) {
+    public <T extends AbstractUser> T transform(Class<T> type) {
         UnaryOperator<AbstractUser> copyFields = source -> {
             source.setName(this.name);
             source.setUsername(this.username);

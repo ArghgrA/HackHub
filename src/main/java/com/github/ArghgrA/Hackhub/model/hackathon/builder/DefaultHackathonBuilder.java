@@ -4,9 +4,9 @@ import com.github.ArghgrA.Hackhub.model.hackathon.DefaultHackathon;
 import com.github.ArghgrA.Hackhub.model.hackathon.state.HackathonState;
 import com.github.ArghgrA.Hackhub.model.hackathon.state.UnactiveState;
 import com.github.ArghgrA.Hackhub.model.other.Interval;
-import com.github.ArghgrA.Hackhub.model.users.staff.Judge;
-import com.github.ArghgrA.Hackhub.model.users.staff.Mentor;
-import com.github.ArghgrA.Hackhub.model.users.staff.Organizer;
+import com.github.ArghgrA.Hackhub.model.user.staff.Judge;
+import com.github.ArghgrA.Hackhub.model.user.staff.Mentor;
+import com.github.ArghgrA.Hackhub.model.user.staff.Organizer;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -39,12 +39,12 @@ public class DefaultHackathonBuilder implements HackathonBuilder<DefaultHackatho
     }
 
     public DefaultHackathonBuilder setOrganizer(Organizer organizer) {
-        hackathon.setOrganizer(organizer);
+        hackathon.addStaff(organizer);
         return this;
     }
 
     public DefaultHackathonBuilder setJudge(Judge judge) {
-        hackathon.setJudge(judge);
+        hackathon.addStaff(judge);
         return this;
     }
 

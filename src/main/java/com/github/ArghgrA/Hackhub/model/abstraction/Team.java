@@ -1,6 +1,6 @@
-package com.github.ArghgrA.Hackhub.model.abstractions;
+package com.github.ArghgrA.Hackhub.model.abstraction;
 
-import com.github.ArghgrA.Hackhub.model.users.TeamMember;
+import com.github.ArghgrA.Hackhub.model.user.TeamMember;
 
 import java.util.List;
 

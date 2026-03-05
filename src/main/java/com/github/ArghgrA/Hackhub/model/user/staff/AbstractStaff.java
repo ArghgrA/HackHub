@@ -1,15 +1,11 @@
-package com.github.ArghgrA.Hackhub.model.users.staff;
+package com.github.ArghgrA.Hackhub.model.user.staff;
 
-import com.github.ArghgrA.Hackhub.model.abstractions.Hackathon;
-import com.github.ArghgrA.Hackhub.model.abstractions.Staff;
-import com.github.ArghgrA.Hackhub.model.abstractions.User;
+import com.github.ArghgrA.Hackhub.model.abstraction.Staff;
 import com.github.ArghgrA.Hackhub.model.hackathon.AbstractHackathon;
-import com.github.ArghgrA.Hackhub.model.users.AbstractUser;
-import com.github.ArghgrA.Hackhub.model.users.DefaultUser;
-import com.github.ArghgrA.Hackhub.model.users.TeamMember;
+import com.github.ArghgrA.Hackhub.model.user.AbstractUser;
+import com.github.ArghgrA.Hackhub.model.user.DefaultUser;
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.UUID;
@@ -22,7 +18,7 @@ public abstract class AbstractStaff extends AbstractUser implements Staff<UUID,A
     AbstractHackathon hackathon;
 
     @Override @SuppressWarnings("all")
-    public <T extends AbstractUser> T prototype(Class<T> type) {
+    public <T extends AbstractUser> T transform(Class<T> type) {
         UnaryOperator<AbstractUser> copyFields = source -> {
             source.setName(super.getName());
             source.setUsername(super.getUsername());

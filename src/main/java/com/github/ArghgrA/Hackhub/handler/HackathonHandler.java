@@ -9,12 +9,15 @@ import com.github.ArghgrA.Hackhub.dto.request.CreateHackathonRequestDTO;
 import com.github.ArghgrA.Hackhub.dto.response.AddJudgeToHackathonResponseDTO;
 import com.github.ArghgrA.Hackhub.dto.response.AddMentorToHackathonResponseDTO;
 import com.github.ArghgrA.Hackhub.dto.response.CreateHackathonResponseDTO;
+import com.github.ArghgrA.Hackhub.exception.AlreadyExistingException;
+import com.github.ArghgrA.Hackhub.exception.EntityNotFoundException;
 import com.github.ArghgrA.Hackhub.model.hackathon.DefaultHackathon;
 import com.github.ArghgrA.Hackhub.model.hackathon.builder.DefaultHackathonBuilder;
+import com.github.ArghgrA.Hackhub.model.hackathon.state.UnactiveState;
 import com.github.ArghgrA.Hackhub.model.other.Interval;
-import com.github.ArghgrA.Hackhub.model.users.staff.Judge;
-import com.github.ArghgrA.Hackhub.model.users.staff.Mentor;
-import com.github.ArghgrA.Hackhub.model.users.staff.Organizer;
+import com.github.ArghgrA.Hackhub.model.user.staff.Judge;
+import com.github.ArghgrA.Hackhub.model.user.staff.Mentor;
+import com.github.ArghgrA.Hackhub.model.user.staff.Organizer;
 import com.github.ArghgrA.Hackhub.repository.HackathonRepository;
 import com.github.ArghgrA.Hackhub.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -36,13 +39,13 @@ public class HackathonHandler {
     public CreateHackathonResponseDTO createHackathon(CreateHackathonRequestDTO dto) {
         Organizer organizer = organizerRepository
                 .findById(dto.organizerId())
-                .orElseThrow(() -> new RuntimeException("No Organizer with that id"));
+                .orElseThrow(() -> new EntityNotFoundException("No Organizer with that id"));
 
         // check if organizer is already registered in one Hackathon
         Optional<DefaultHackathon> alreadyExistingHackathon = hackathonRepository.findHackathonByStaff(organizer.getId());
-        if(alreadyExistingHackathon.isPresent()) throw new RuntimeException("Organizer is already subscribed to an hackathon");
+        if(alreadyExistingHackathon.isPresent()) throw new AlreadyExistingException("Organizer is already subscribed to an hackathon");
 
-        // create an Interval. throw Execption if not respect Constraints
+        // create an Interval. throw IllegalDateException if not respect Constraints
         Interval hackathonInterval = new Interval(
                 dto.registrationStart(),
                 dto.registrationEnd(),
@@ -58,6 +61,7 @@ public class HackathonHandler {
                 .setInterval(hackathonInterval)
                 .setMaxTeamMembers(dto.maxTeamMembers())
                 .setOrganizer(organizer)
+                .setState(new UnactiveState())
                 .getResult();
 
         organizer.setHackathon(hackathon);
@@ -68,21 +72,28 @@ public class HackathonHandler {
     }
 
     public AddJudgeToHackathonResponseDTO addJudge(AddJudgeToHackathonRequestDTO dto) {
-        // check if Judge exist
-        Judge judge = judgeRepository
-                .findById(dto.idJudge())
-                .orElseThrow(() -> new RuntimeException("no judge with this id"));
+        Organizer organizer = organizerRepository
+                .findById(dto.organizerId())
+                .orElseThrow(() -> new EntityNotFoundException("No Organizer with that id"));
 
         // check if Hackathon exist
         DefaultHackathon hackathon = hackathonRepository
-                        .findById(dto.idHackathon())
-                        .orElseThrow(() -> new RuntimeException("no hackathon with this id"));
+                .findHackathonByStaff(dto.organizerId())
+                .orElseThrow(() -> new EntityNotFoundException("Hackathon not exist"));
 
-        // check if judge is already in one hackathon
+        // check if Hackathon already has a Judge
+        if (hackathon.getJudge() != null) throw new AlreadyExistingException("Hakathon already has a Judge");
+
+        // check if Judge exist
+        Judge judge = judgeRepository
+                .findById(dto.judgeId())
+                .orElseThrow(() -> new EntityNotFoundException("Judge not exist"));
+
+        // check if passed Judge is already in one hackathon
         Optional<DefaultHackathon> alreadyExistingHackathon = hackathonRepository.findHackathonByStaff(judge.getId());
-        if(alreadyExistingHackathon.isPresent()) throw new IllegalStateException("Judge is already subscribed to an hackathon");
+        if(alreadyExistingHackathon.isPresent()) throw new AlreadyExistingException("Judge already subscribed to one Hackathon");
 
-        // add Judge to Hackathon
+        // add Judge to Hackathon and persist in db
         hackathon.addStaff(judge);
         hackathonRepository.save(hackathon);
 
@@ -90,20 +101,26 @@ public class HackathonHandler {
     }
 
     public AddMentorToHackathonResponseDTO addMentor(AddMentorToHackathonRequestDTO dto) {
+        Organizer organizer = organizerRepository
+                .findById(dto.organizerId())
+                .orElseThrow(() -> new EntityNotFoundException("No Organizer with that id"));
+
+        // check if Hackathon exist
+        DefaultHackathon hackathon = hackathonRepository
+                .findById(dto.organizerId())
+                .orElseThrow(() -> new EntityNotFoundException("HackathonNotExist"));
+
         // check if Mentor exist
         Mentor mentor = mentorRepository
-                .findById(dto.idMentor())
-                .orElseThrow(() -> new RuntimeException("no mentor with this id"));
+                .findById(dto.mentorId())
+                .orElseThrow(() -> new EntityNotFoundException("MentorNotExist"));
 
-        DefaultHackathon hackathon = hackathonRepository
-                .findById(dto.idHackathon())
-                .orElseThrow(() -> new RuntimeException("no hackathon with this id"));
 
-        // check if judge is already in one hackathon
+        // check if mentor is already in one hackathon
         Optional<DefaultHackathon> alreadyExistingHackathon = hackathonRepository.findHackathonByStaff(mentor.getId());
-        if(alreadyExistingHackathon.isPresent()) throw new IllegalStateException("Mentor is already subscribed to an hackathon");
+        if(alreadyExistingHackathon.isPresent()) throw new AlreadyExistingException("Mentor already subscribed to one Hackathon");
 
-        // add Mentor to Hackathon
+        // add Mentor to Hackathon and persist in db
         hackathon.addStaff(mentor);
         hackathonRepository.save(hackathon);
 

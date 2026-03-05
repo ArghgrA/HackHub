@@ -1,19 +1,18 @@
-package com.github.ArghgrA.Hackhub.model.users;
+package com.github.ArghgrA.Hackhub.model.user;
 
 
-import com.github.ArghgrA.Hackhub.model.other.invites.DefaultInvite;
+import com.github.ArghgrA.Hackhub.model.other.invites.AbstractInvite;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 import java.util.List;
 
-@NoArgsConstructor @Getter @Setter @ToString(callSuper = true)
+@NoArgsConstructor @Getter @Setter
 @Entity
 public class DefaultUser extends AbstractUser {
     @OneToMany(mappedBy = "id")
-    private List<DefaultInvite> invites;
+    private List<AbstractInvite> invites;
 }

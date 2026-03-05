@@ -18,7 +18,7 @@ public class TeamController {
     @Autowired
     private TeamHandler teamHandler;
 
-    @PostMapping("/add")
+    @PostMapping("/new")
     public ResponseEntity<CreateTeamResponseDTO> addTeam(@Valid @RequestBody CreateTeamRequestDTO dto) {
         CreateTeamResponseDTO response = teamHandler.createTeam(dto);
         return ResponseEntity.status(HttpStatus.OK).body(response);
