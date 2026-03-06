@@ -2,6 +2,7 @@ package com.github.ArghgrA.Hackhub.model.hackathon;
 
 import com.github.ArghgrA.Hackhub.model.abstraction.Hackathon;
 import com.github.ArghgrA.Hackhub.model.hackathon.state.HackathonState;
+import com.github.ArghgrA.Hackhub.model.hackathon.state.util.HackathonStateConverter;
 import com.github.ArghgrA.Hackhub.model.other.Interval;
 import com.github.ArghgrA.Hackhub.model.user.staff.AbstractStaff;
 import com.github.ArghgrA.Hackhub.model.user.staff.Judge;
@@ -16,7 +17,7 @@ import java.util.UUID;
 
 @Getter @Setter
 @Entity @Inheritance(strategy = InheritanceType.JOINED)
-public abstract class AbstractHackathon implements Hackathon<UUID> {
+public abstract class AbstractHackathon implements Hackathon<UUID>, HackathonState {
     @Setter(AccessLevel.NONE)
     @Id @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -41,7 +42,7 @@ public abstract class AbstractHackathon implements Hackathon<UUID> {
 
     private Integer maxTeamMembers;
 
-    @Embedded
+    @Convert(converter = HackathonStateConverter.class)
     private HackathonState state;
 
     public void addStaff(AbstractStaff s) {
@@ -55,7 +56,11 @@ public abstract class AbstractHackathon implements Hackathon<UUID> {
                 if (this.mentors == null) this.mentors = new LinkedList<>();
                 if (!this.mentors.contains(m)) this.mentors.add(m);
             }
-            default -> throw new IllegalArgumentException("");
+            default -> throw new IllegalArgumentException("Unknown Staff");
         }
     }
+
+    public void updateState() {
+        state.updateState(this);
+    };
 }

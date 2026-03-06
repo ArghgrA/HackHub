@@ -34,3 +34,6 @@ build/
 
 ### db ###
 src/main/resources/database/*
+
+### VPP ###
+progettoIDS.vpp

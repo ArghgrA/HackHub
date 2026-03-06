@@ -1,8 +1,7 @@
 package com.github.ArghgrA.Hackhub.model.hackathon.state;
 
-import jakarta.persistence.Embeddable;
+import com.github.ArghgrA.Hackhub.model.hackathon.AbstractHackathon;
 
-@Embeddable
 public interface HackathonState {
-
+    void updateState(AbstractHackathon h);
 }

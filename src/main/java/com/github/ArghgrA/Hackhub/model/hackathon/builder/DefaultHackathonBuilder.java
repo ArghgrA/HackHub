@@ -2,7 +2,7 @@ package com.github.ArghgrA.Hackhub.model.hackathon.builder;
 
 import com.github.ArghgrA.Hackhub.model.hackathon.DefaultHackathon;
 import com.github.ArghgrA.Hackhub.model.hackathon.state.HackathonState;
-import com.github.ArghgrA.Hackhub.model.hackathon.state.UnactiveState;
+import com.github.ArghgrA.Hackhub.model.hackathon.state.InactiveState;
 import com.github.ArghgrA.Hackhub.model.other.Interval;
 import com.github.ArghgrA.Hackhub.model.user.staff.Judge;
 import com.github.ArghgrA.Hackhub.model.user.staff.Mentor;
@@ -62,7 +62,7 @@ public class DefaultHackathonBuilder implements HackathonBuilder<DefaultHackatho
         DefaultHackathon tmp = hackathon;
 
         // default values for some fields
-        if (tmp.getState() == null) tmp.setState(new UnactiveState());
+        if (tmp.getState() == null) tmp.setState(new InactiveState());
         if (tmp.getMentors() == null) tmp.setMentors(new LinkedList<>());
 
         hackathon = new DefaultHackathon();

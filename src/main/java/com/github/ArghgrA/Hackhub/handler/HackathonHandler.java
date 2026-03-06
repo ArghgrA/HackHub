@@ -13,7 +13,7 @@ import com.github.ArghgrA.Hackhub.exception.AlreadyExistingException;
 import com.github.ArghgrA.Hackhub.exception.EntityNotFoundException;
 import com.github.ArghgrA.Hackhub.model.hackathon.DefaultHackathon;
 import com.github.ArghgrA.Hackhub.model.hackathon.builder.DefaultHackathonBuilder;
-import com.github.ArghgrA.Hackhub.model.hackathon.state.UnactiveState;
+import com.github.ArghgrA.Hackhub.model.hackathon.state.InactiveState;
 import com.github.ArghgrA.Hackhub.model.other.Interval;
 import com.github.ArghgrA.Hackhub.model.user.staff.Judge;
 import com.github.ArghgrA.Hackhub.model.user.staff.Mentor;
@@ -61,7 +61,7 @@ public class HackathonHandler {
                 .setInterval(hackathonInterval)
                 .setMaxTeamMembers(dto.maxTeamMembers())
                 .setOrganizer(organizer)
-                .setState(new UnactiveState())
+                .setState(new InactiveState())
                 .getResult();
 
         organizer.setHackathon(hackathon);
