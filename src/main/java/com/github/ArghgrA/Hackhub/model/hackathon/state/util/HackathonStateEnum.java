@@ -1,0 +1,24 @@
+package com.github.ArghgrA.Hackhub.model.hackathon.state.util;
+
+import com.github.ArghgrA.Hackhub.model.hackathon.state.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@AllArgsConstructor @Getter
+public enum HackathonStateEnum {
+    INACTIVE(InactiveState.INSTANCE),
+    REGISTRATION(RegistrationState.INSTANCE),
+    COMPETITION(CompetitionState.INSTANCE),
+    EVALUATION(EvaluationState.INSTANCE),
+    FINISHED(FinishedState.INSTANCE);
+
+    private final HackathonState instance;
+
+    public static HackathonStateEnum fromState(HackathonState state) {
+        for (HackathonStateEnum e : values()) {
+            if (e.instance == state) return e;
+        }
+
+        throw new IllegalArgumentException("Unknown HackathonState");
+    }
+}

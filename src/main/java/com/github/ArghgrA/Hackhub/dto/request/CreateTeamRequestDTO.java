@@ -1,15 +1,14 @@
 package com.github.ArghgrA.Hackhub.dto.request;
 
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-
+import jakarta.validation.constraints.*;
 import java.util.UUID;
 
 public record CreateTeamRequestDTO(
-        @NotNull
+
+        @NotNull(message = "{CreateTeamRequestDTO.userId.NotNull}")
         UUID userId,
-        @NotEmpty @Size(min = 3,max = 30)
+
+        @NotEmpty(message = "{CreateTeamRequestDTO.name.NotEmpty}")
+        @Size(min = 3, max = 30, message = "{CreateTeamRequestDTO.name.Size}")
         String name
-) {
-}
+) {}

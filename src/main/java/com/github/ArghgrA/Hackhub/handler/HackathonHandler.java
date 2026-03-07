@@ -13,16 +13,20 @@ import com.github.ArghgrA.Hackhub.exception.AlreadyExistingException;
 import com.github.ArghgrA.Hackhub.exception.EntityNotFoundException;
 import com.github.ArghgrA.Hackhub.model.hackathon.DefaultHackathon;
 import com.github.ArghgrA.Hackhub.model.hackathon.builder.DefaultHackathonBuilder;
-import com.github.ArghgrA.Hackhub.model.hackathon.state.UnactiveState;
+import com.github.ArghgrA.Hackhub.model.hackathon.state.InactiveState;
+import com.github.ArghgrA.Hackhub.model.hackathon.state.util.HackathonStateEnum;
 import com.github.ArghgrA.Hackhub.model.other.Interval;
 import com.github.ArghgrA.Hackhub.model.user.staff.Judge;
 import com.github.ArghgrA.Hackhub.model.user.staff.Mentor;
 import com.github.ArghgrA.Hackhub.model.user.staff.Organizer;
 import com.github.ArghgrA.Hackhub.repository.HackathonRepository;
 import com.github.ArghgrA.Hackhub.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -61,7 +65,7 @@ public class HackathonHandler {
                 .setInterval(hackathonInterval)
                 .setMaxTeamMembers(dto.maxTeamMembers())
                 .setOrganizer(organizer)
-                .setState(new UnactiveState())
+                .setState(new InactiveState())
                 .getResult();
 
         organizer.setHackathon(hackathon);
@@ -125,5 +129,19 @@ public class HackathonHandler {
         hackathonRepository.save(hackathon);
 
         return mentorToHackathonMapper.toResponse(mentor);
+    }
+
+    @Transactional
+    @Scheduled(cron = "0 */30 * * * *")
+    public void updateHackathonState() {
+        LocalDateTime now = LocalDateTime.now();
+
+        // retrieve hackathons whose temporal windows (registration or competition) include the current time.
+        hackathonRepository.findHackathonByInstant(now)
+                .stream()
+                // make sure that only hackathon that are in REGISTRATION or COMPETITION state can be updated
+                .filter(h -> h.getState() == HackathonStateEnum.REGISTRATION.getInstance() ||
+                        h.getState() == HackathonStateEnum.COMPETITION.getInstance())
+                .forEach(DefaultHackathon::updateState);
     }
 }

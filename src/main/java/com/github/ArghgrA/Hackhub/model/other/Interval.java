@@ -10,8 +10,6 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-//@NoArgsConstructor @Getter @Setter
-//@Entity @Table(name = "table_interval")
 @Embeddable
 @NoArgsConstructor @Getter
 public class Interval {
@@ -28,6 +26,11 @@ public class Interval {
             LocalDateTime registrationEnd,
             LocalDateTime competitionStart,
             LocalDateTime competitionEnd) {
+
+        validateHourPrecision(registrationStart, "registrationStart");
+        validateHourPrecision(registrationEnd, "registrationEnd");
+        validateHourPrecision(competitionStart, "competitionStart");
+        validateHourPrecision(competitionEnd, "competitionEnd");
 
         if (registrationEnd.isBefore(registrationStart.plusHours(1))) {
             throw new IllegalDateException("Registration period must be at least 1 hour");
@@ -49,5 +52,14 @@ public class Interval {
         this.registrationEnd = registrationEnd;
         this.competitionStart = competitionStart;
         this.competitionEnd = competitionEnd;
+    }
+
+    private void validateHourPrecision(LocalDateTime date, String fieldName) {
+        if (date == null) return;
+        if (date.getMinute() != 0 || date.getSecond() != 0 || date.getNano() != 0) {
+            throw new IllegalDateException(
+                    String.format("Field '%s' must have hour precision only (got: %s)", fieldName, date)
+            );
+        }
     }
 }

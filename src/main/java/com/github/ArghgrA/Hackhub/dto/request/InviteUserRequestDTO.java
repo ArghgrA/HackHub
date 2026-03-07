@@ -1,18 +1,17 @@
 package com.github.ArghgrA.Hackhub.dto.request;
 
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-import lombok.NonNull;
-
+import jakarta.validation.constraints.*;
 import java.util.UUID;
 
 public record InviteUserRequestDTO(
-        @NotNull
+
+        @NotNull(message = "{InviteUserRequestDTO.userId.NotNull}")
         UUID userId,
-        @NotNull
+
+        @NotNull(message = "{InviteUserRequestDTO.teamId.NotNull}")
         UUID teamId,
-        @NotEmpty @Size(max = 200)
+
+        @NotEmpty(message = "{InviteUserRequestDTO.message.NotEmpty}")
+        @Size(max = 200, message = "{InviteUserRequestDTO.message.Size}")
         String message
-) {
-}
+) {}

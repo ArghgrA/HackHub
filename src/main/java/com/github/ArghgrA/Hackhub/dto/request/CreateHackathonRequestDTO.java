@@ -1,29 +1,38 @@
 package com.github.ArghgrA.Hackhub.dto.request;
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-
+import jakarta.validation.constraints.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 public record CreateHackathonRequestDTO(
-        @NotEmpty @Size(min = 3,max = 30)
+
+        @NotEmpty(message = "{CreateHackathonRequestDTO.name.NotEmpty}")
+        @Size(min = 3, max = 30, message = "{CreateHackathonRequestDTO.name.Size}")
         String name,
-        @NotEmpty @Size(max = 100)
+
+        @NotEmpty(message = "{CreateHackathonRequestDTO.rule.NotEmpty}")
+        @Size(max = 100, message = "{CreateHackathonRequestDTO.rule.Size}")
         String rule,
-        @Min(2)
+
+        @Min(value = 2, message = "{CreateHackathonRequestDTO.maxTeamMembers.min}")
         Integer maxTeamMembers,
-        @NotNull
+
+        @NotNull(message = "{CreateHackathonRequestDTO.organizerId.NotNull}")
         UUID organizerId,
-        @NotNull
+
+        @NotNull(message = "{CreateHackathonRequestDTO.registrationStart.NotNull}")
+        @Future(message = "{CreateHackathonRequestDTO.registrationStart.Future}")
         LocalDateTime registrationStart,
-        @NotNull
+
+        @NotNull(message = "{CreateHackathonRequestDTO.registrationEnd.NotNull}")
+        @Future(message = "{CreateHackathonRequestDTO.registrationEnd.Future}")
         LocalDateTime registrationEnd,
-        @NotNull
+
+        @NotNull(message = "{CreateHackathonRequestDTO.competitionStart.NotNull}")
+        @Future(message = "{CreateHackathonRequestDTO.competitionStart.Future}")
         LocalDateTime competitionStart,
-        @NotNull
+
+        @NotNull(message = "{CreateHackathonRequestDTO.competitionEnd.NotNull}")
+        @Future(message = "{CreateHackathonRequestDTO.competitionEnd.Future}")
         LocalDateTime competitionEnd
-) {
-}
+) {}
