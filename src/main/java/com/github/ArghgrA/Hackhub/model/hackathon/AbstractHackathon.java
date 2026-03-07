@@ -17,7 +17,7 @@ import java.util.UUID;
 
 @Getter @Setter
 @Entity @Inheritance(strategy = InheritanceType.JOINED)
-public abstract class AbstractHackathon implements Hackathon<UUID>, HackathonState {
+public abstract class AbstractHackathon implements Hackathon<UUID>/*, HackathonState */ {
     @Setter(AccessLevel.NONE)
     @Id @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
