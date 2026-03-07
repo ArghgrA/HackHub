@@ -4,6 +4,7 @@ import com.github.ArghgrA.Hackhub.model.abstraction.Hackathon;
 import com.github.ArghgrA.Hackhub.model.hackathon.state.HackathonState;
 import com.github.ArghgrA.Hackhub.model.hackathon.state.util.HackathonStateConverter;
 import com.github.ArghgrA.Hackhub.model.other.Interval;
+import com.github.ArghgrA.Hackhub.model.team.AbstractTeam;
 import com.github.ArghgrA.Hackhub.model.user.staff.AbstractStaff;
 import com.github.ArghgrA.Hackhub.model.user.staff.Judge;
 import com.github.ArghgrA.Hackhub.model.user.staff.Mentor;
@@ -42,6 +43,12 @@ public abstract class AbstractHackathon implements Hackathon<UUID>/*, HackathonS
 
     private Integer maxTeamMembers;
 
+    @ManyToMany
+    @JoinTable(name = "team_hackathon",
+            joinColumns = @JoinColumn(name = "hackathon_id"),
+            inverseJoinColumns = @JoinColumn(name = "team_id"))
+    private List<AbstractTeam> teams;
+
     @Convert(converter = HackathonStateConverter.class)
     private HackathonState state;
 
@@ -58,6 +65,12 @@ public abstract class AbstractHackathon implements Hackathon<UUID>/*, HackathonS
             }
             default -> throw new IllegalArgumentException("Unknown Staff");
         }
+    }
+
+    public void addTeam(AbstractTeam team){
+        if(team == null) return;
+        if (teams == null) teams = new LinkedList<>();
+        if (!teams.contains(team)) teams.add(team);
     }
 
     public void updateState() {

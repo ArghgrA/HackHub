@@ -1,7 +1,9 @@
 package com.github.ArghgrA.Hackhub.model.hackathon.builder;
 
+import com.github.ArghgrA.Hackhub.model.abstraction.Team;
 import com.github.ArghgrA.Hackhub.model.hackathon.state.HackathonState;
 import com.github.ArghgrA.Hackhub.model.other.Interval;
+import com.github.ArghgrA.Hackhub.model.team.AbstractTeam;
 import com.github.ArghgrA.Hackhub.model.user.staff.Judge;
 import com.github.ArghgrA.Hackhub.model.user.staff.Mentor;
 import com.github.ArghgrA.Hackhub.model.user.staff.Organizer;
@@ -16,5 +18,6 @@ public interface HackathonBuilder<T extends HackathonBuilder<T>> {
     T setOrganizer(Organizer organizer);
     T setJudge(Judge judge);
     T setMentors(List<Mentor> mentors);
+    T setTeams(List<AbstractTeam> teams);
     T setState(HackathonState state);
 }
