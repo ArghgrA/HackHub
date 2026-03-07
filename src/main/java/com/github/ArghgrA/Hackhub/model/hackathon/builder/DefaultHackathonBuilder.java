@@ -4,6 +4,7 @@ import com.github.ArghgrA.Hackhub.model.hackathon.DefaultHackathon;
 import com.github.ArghgrA.Hackhub.model.hackathon.state.HackathonState;
 import com.github.ArghgrA.Hackhub.model.hackathon.state.InactiveState;
 import com.github.ArghgrA.Hackhub.model.other.Interval;
+import com.github.ArghgrA.Hackhub.model.team.AbstractTeam;
 import com.github.ArghgrA.Hackhub.model.user.staff.Judge;
 import com.github.ArghgrA.Hackhub.model.user.staff.Mentor;
 import com.github.ArghgrA.Hackhub.model.user.staff.Organizer;
@@ -53,6 +54,11 @@ public class DefaultHackathonBuilder implements HackathonBuilder<DefaultHackatho
         return this;
     }
 
+    public DefaultHackathonBuilder setTeams(List<AbstractTeam> teams){
+        hackathon.setTeams(teams);
+        return this;
+    }
+
     public DefaultHackathonBuilder setState(HackathonState state) {
         hackathon.setState(state);
         return this;
@@ -64,6 +70,7 @@ public class DefaultHackathonBuilder implements HackathonBuilder<DefaultHackatho
         // default values for some fields
         if (tmp.getState() == null) tmp.setState(new InactiveState());
         if (tmp.getMentors() == null) tmp.setMentors(new LinkedList<>());
+        if (tmp.getTeams() == null) tmp.setTeams(new LinkedList<>());
 
         hackathon = new DefaultHackathon();
         return tmp;
