@@ -5,10 +5,9 @@ import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
 
 public record CloseTicketRequestDTO(
-        @NotNull
+        @NotNull(message = "{CloseTicketRequestDTO.ticketId.NotNull}")
         UUID ticketId,
-
-        @NotNull
+        @NotNull(message = "{CloseTicketRequestDTO.mentorId.NotNull}")
         UUID mentorId
 ) {
 }

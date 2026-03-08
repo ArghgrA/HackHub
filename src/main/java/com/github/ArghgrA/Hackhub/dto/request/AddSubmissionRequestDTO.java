@@ -6,11 +6,11 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.UUID;
 
 public record AddSubmissionRequestDTO(
-        @NotNull
+        @NotNull(message = "{AddSubmissionRequestDTO.teamId.NotNull}")
         UUID teamId,
-        @NotNull
+        @NotNull(message = "{AddSubmissionRequestDTO.hackathonId.NotNull}")
         UUID hackathonId,
-        @NotNull
+        @NotNull(message = "{AddSubmissionRequestDTO.file.NotNull}")
         MultipartFile file
 ) {
 }

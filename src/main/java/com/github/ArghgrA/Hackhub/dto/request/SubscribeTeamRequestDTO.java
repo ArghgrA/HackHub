@@ -5,9 +5,9 @@ import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
 
 public record SubscribeTeamRequestDTO(
-        @NotNull
+        @NotNull(message = "{SubscribeTeamRequestDTO.idTeam.NotNull}")
         UUID idTeam,
-        @NotNull
+        @NotNull(message = "{SubscribeTeamRequestDTO.idHackathon.NotNull}")
         UUID idHackathon
 ) {
 }

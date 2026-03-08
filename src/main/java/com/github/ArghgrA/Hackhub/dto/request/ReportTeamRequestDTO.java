@@ -6,13 +6,13 @@ import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
 
 public record ReportTeamRequestDTO(
-        @NotNull
+        @NotNull(message = "{ReportTeamRequestDTO.teamId.NotNull}")
         UUID teamId,
-        @NotNull
+        @NotNull(message = "{ReportTeamRequestDTO.mentorId.NotNull}")
         UUID mentorId,
-        @NotNull
+        @NotNull(message = "{ReportTeamRequestDTO.hackathonId.NotNull}")
         UUID hackathonId,
-        @NotEmpty
+        @NotEmpty(message = "{ReportTeamRequestDTO.message.NotEmpty}")
         String message
 ) {
 }
