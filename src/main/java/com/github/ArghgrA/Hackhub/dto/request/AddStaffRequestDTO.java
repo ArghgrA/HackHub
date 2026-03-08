@@ -6,9 +6,9 @@ import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
 
 public record AddStaffRequestDTO(
-        @NotNull
+        @NotNull(message = "{AddStaffRequestDTO.userId.NotNull}")
         UUID userId,
-        @NotNull
+        @NotNull(message = "{AddStaffRequestDTO.role.NotNull}")
         StaffEnum role
 ) {
 }
