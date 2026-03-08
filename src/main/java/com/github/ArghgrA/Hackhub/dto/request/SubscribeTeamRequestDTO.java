@@ -1,11 +1,10 @@
 package com.github.ArghgrA.Hackhub.dto.request;
 
 import jakarta.validation.constraints.NotNull;
-import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 import java.util.UUID;
 
-public record SubscribeTeamToHackathonRequestDTO (
+public record SubscribeTeamRequestDTO(
         @NotNull
         UUID idTeam,
         @NotNull
