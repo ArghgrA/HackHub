@@ -7,15 +7,16 @@ import jakarta.validation.constraints.Size;
 import java.util.UUID;
 
 public record AddEvaluationRequestDTO(
-        @NotNull
+        @NotNull(message = "{AddEvaluationRequestDTO.judgeId.NotNull}")
         UUID judgeId,
-        @NotNull
+        @NotNull(message = "{AddEvaluationRequestDTO.submissionId.NotNull}")
         UUID submissionId,
-        @NotNull
+        @NotNull(message = "{AddEvaluationRequestDTO.hackathonId.NotNull}")
         UUID hackathonId,
-        @NotNull @Size(max = 10)
+        @NotNull(message = "{AddEvaluationRequestDTO.score.NotNull}")
+        @Size(max = 10, message = "{AddEvaluationRequestDTO.score.Size}")
         Integer score,
-        @NotEmpty
+        @NotEmpty(message = "{AddEvaluationRequestDTO.details.NotEmpty}")
         String details
 ) {
 }

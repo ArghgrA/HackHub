@@ -1,15 +1,16 @@
 package com.github.ArghgrA.Hackhub.dto.request;
 
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.UUID;
 
 public record AddTicketRequestDTO(
-        @NotNull
+        @NotNull(message = "{AddTicketRequestDTO.teamId.NotNull}")
         UUID teamId,
-        @NotNull
+        @NotNull(message = "{AddTicketRequestDTO.hackathonId.NotNull}")
         UUID hackathonId,
-        @NotNull
+        @NotEmpty(message = "{AddTicketRequestDTO.message.NotEmpty}")
         String message
 ) {
 }

@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
 
 public record GetTicketRequestDTO(
-        @NotNull
+        @NotNull(message = "{GetTicketRequestDTO.hackathonId.NotNull}")
         UUID hackathonId
 ) {
 }
