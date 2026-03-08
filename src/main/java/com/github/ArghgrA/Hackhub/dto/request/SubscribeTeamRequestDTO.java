@@ -7,6 +7,7 @@ import java.util.UUID;
 public record SubscribeTeamRequestDTO(
         @NotNull(message = "{SubscribeTeamRequestDTO.idTeam.NotNull}")
         UUID idTeam,
+
         @NotNull(message = "{SubscribeTeamRequestDTO.idHackathon.NotNull}")
         UUID idHackathon
 ) {

@@ -8,6 +8,7 @@ import java.util.UUID;
 public record AddStaffRequestDTO(
         @NotNull(message = "{AddStaffRequestDTO.userId.NotNull}")
         UUID userId,
+
         @NotNull(message = "{AddStaffRequestDTO.role.NotNull}")
         StaffEnum role
 ) {

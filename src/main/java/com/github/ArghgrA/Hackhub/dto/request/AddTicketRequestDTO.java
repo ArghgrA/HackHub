@@ -8,8 +8,10 @@ import java.util.UUID;
 public record AddTicketRequestDTO(
         @NotNull(message = "{AddTicketRequestDTO.teamId.NotNull}")
         UUID teamId,
+
         @NotNull(message = "{AddTicketRequestDTO.hackathonId.NotNull}")
         UUID hackathonId,
+
         @NotEmpty(message = "{AddTicketRequestDTO.message.NotEmpty}")
         String message
 ) {
