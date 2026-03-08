@@ -1,7 +1,7 @@
 package com.github.ArghgrA.Hackhub.model.user;
 
 
-import com.github.ArghgrA.Hackhub.model.other.invites.AbstractInvite;
+import com.github.ArghgrA.Hackhub.model.other.message.DefaultInvite;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import lombok.Getter;
@@ -14,5 +14,5 @@ import java.util.List;
 @Entity
 public class DefaultUser extends AbstractUser {
     @OneToMany(mappedBy = "id")
-    private List<AbstractInvite> invites;
+    private List<DefaultInvite> invites;
 }
