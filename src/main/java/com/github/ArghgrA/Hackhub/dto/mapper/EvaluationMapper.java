@@ -6,7 +6,7 @@ import org.mapstruct.Mapper;
 
 import java.util.List;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface EvaluationMapper {
     EvaluationDTO toDTO(DefaultEvaluation evaluation);
     List<EvaluationDTO> toDTOList(List<DefaultEvaluation> evaluations);
