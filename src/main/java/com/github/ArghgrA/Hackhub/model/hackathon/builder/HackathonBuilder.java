@@ -8,6 +8,7 @@ import com.github.ArghgrA.Hackhub.model.user.staff.Judge;
 import com.github.ArghgrA.Hackhub.model.user.staff.Mentor;
 import com.github.ArghgrA.Hackhub.model.user.staff.Organizer;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface HackathonBuilder<T extends HackathonBuilder<T>> {
@@ -20,4 +21,5 @@ public interface HackathonBuilder<T extends HackathonBuilder<T>> {
     T setMentors(List<Mentor> mentors);
     T setTeams(List<AbstractTeam> teams);
     T setState(HackathonState state);
+    T setPrice(BigDecimal price);
 }

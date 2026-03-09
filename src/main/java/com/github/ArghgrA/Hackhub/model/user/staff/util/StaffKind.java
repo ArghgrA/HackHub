@@ -5,7 +5,7 @@ import com.github.ArghgrA.Hackhub.model.user.staff.Judge;
 import com.github.ArghgrA.Hackhub.model.user.staff.Mentor;
 import com.github.ArghgrA.Hackhub.model.user.staff.Organizer;
 
-public enum StaffEnum {
+public enum StaffKind {
     ORGANIZER,
     JUDGE,
     MENTOR;

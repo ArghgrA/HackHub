@@ -1,9 +1,6 @@
 package com.github.ArghgrA.Hackhub.controller;
 
-import com.github.ArghgrA.Hackhub.dto.model.InviteDTO;
-import com.github.ArghgrA.Hackhub.dto.model.SubmissionDTO;
-import com.github.ArghgrA.Hackhub.dto.model.TeamDTO;
-import com.github.ArghgrA.Hackhub.dto.model.TicketDTO;
+import com.github.ArghgrA.Hackhub.dto.model.*;
 import com.github.ArghgrA.Hackhub.dto.request.*;
 import com.github.ArghgrA.Hackhub.handler.TeamHandler;
 import jakarta.validation.Valid;
@@ -44,6 +41,12 @@ public class TeamController {
     @PostMapping("/invite/new")
     public ResponseEntity<InviteDTO> inviteUser(InviteUserRequestDTO dto) {
         InviteDTO response = teamHandler.inviteUser(dto);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @PostMapping("/payment/new")
+    public ResponseEntity<PaymentDTO> addPayment(AddPaymentMethodRequestDTO dto) {
+        PaymentDTO response = teamHandler.addPayment(dto);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }

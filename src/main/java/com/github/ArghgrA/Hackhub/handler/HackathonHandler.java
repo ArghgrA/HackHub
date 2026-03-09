@@ -11,7 +11,7 @@ import com.github.ArghgrA.Hackhub.exception.EntityNotFoundException;
 import com.github.ArghgrA.Hackhub.model.hackathon.DefaultHackathon;
 import com.github.ArghgrA.Hackhub.model.hackathon.builder.DefaultHackathonBuilder;
 import com.github.ArghgrA.Hackhub.model.hackathon.state.InactiveState;
-import com.github.ArghgrA.Hackhub.model.hackathon.state.util.HackathonStateEnum;
+import com.github.ArghgrA.Hackhub.model.hackathon.state.util.HackathonStateKind;
 import com.github.ArghgrA.Hackhub.model.other.Interval;
 import com.github.ArghgrA.Hackhub.model.user.staff.AbstractStaff;
 import com.github.ArghgrA.Hackhub.model.user.staff.Judge;
@@ -135,8 +135,8 @@ public class HackathonHandler {
         hackathonRepository.findHackathonByInstant(now)
                 .stream()
                 // make sure that only hackathon that are in REGISTRATION or COMPETITION state can be updated
-                .filter(h -> h.getState() == HackathonStateEnum.REGISTRATION.getInstance() ||
-                        h.getState() == HackathonStateEnum.COMPETITION.getInstance())
+                .filter(h -> h.getState() == HackathonStateKind.REGISTRATION.getInstance() ||
+                        h.getState() == HackathonStateKind.COMPETITION.getInstance())
                 .forEach(DefaultHackathon::updateState);
     }
 }

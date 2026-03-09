@@ -1,8 +1,8 @@
 package com.github.ArghgrA.Hackhub.model.team;
 
-import com.github.ArghgrA.Hackhub.model.abstraction.Hackathon;
 import com.github.ArghgrA.Hackhub.model.abstraction.Team;
 import com.github.ArghgrA.Hackhub.model.hackathon.AbstractHackathon;
+import com.github.ArghgrA.Hackhub.model.other.payment.address.AbstractPaymentAddress;
 import com.github.ArghgrA.Hackhub.model.user.TeamMember;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -12,6 +12,7 @@ import lombok.Setter;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @NoArgsConstructor @Getter @Setter
@@ -22,23 +23,47 @@ public abstract class AbstractTeam implements Team<UUID> {
     private UUID id;
 
     @Setter(AccessLevel.NONE)
-    @OneToMany(mappedBy = "id")
-    private List<TeamMember> members;
+    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TeamMember> members = new LinkedList<>();
 
     private String name;
 
     @ManyToMany(mappedBy = "teams")
-    private List<AbstractHackathon> hackathons;
+    private List<AbstractHackathon> hackathons = new LinkedList<>();
+
+    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AbstractPaymentAddress> addresses = new LinkedList<>();
 
     public void addMember(TeamMember member) {
         if (member == null) return;
-        if (members == null) members = new LinkedList<>();
-        if (!members.contains(member)) members.add(member);
+        if (!members.contains(member)) {
+            members.add(member);
+            member.setTeam(this);
+        };
     }
 
-    public void addHackthon(AbstractHackathon hackathon){
+    public void addHackathon(AbstractHackathon hackathon){
         if(hackathon == null) return;
-        if (hackathons == null) hackathons = new LinkedList<>();
-        if (!hackathons.contains(hackathon)) hackathons.add(hackathon);
+        if (!hackathons.contains(hackathon)){
+            hackathons.add(hackathon);
+            hackathon.addTeam(this);
+        }
+    }
+
+    public void addPaymentAddress(AbstractPaymentAddress address) {
+        if(address == null) return;
+        if (!addresses.contains(address)) {
+            // delete old payment method of same kind if exist
+            findAddressByType(address.getClass()).ifPresent(addresses::remove);
+            addresses.add(address);
+            address.setTeam(this);
+        };
+    }
+
+    private  <T extends AbstractPaymentAddress> Optional<T> findAddressByType(Class<T> type) {
+        return addresses.stream()
+                .filter(type::isInstance)
+                .map(type::cast)
+                .findFirst();
     }
 }

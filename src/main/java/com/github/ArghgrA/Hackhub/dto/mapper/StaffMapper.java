@@ -10,9 +10,4 @@ import java.util.List;
 public interface StaffMapper {
     StaffDTO toDTO(AbstractStaff staff);
     List<StaffDTO> toDTOList(List<AbstractStaff> staffs);
-
-    default String extractRole(AbstractStaff staff) {
-        if(staff == null) return null;
-        return staff.getClass().getSimpleName();
-    }
 }

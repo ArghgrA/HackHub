@@ -8,7 +8,7 @@ import com.github.ArghgrA.Hackhub.dto.model.TicketDTO;
 import com.github.ArghgrA.Hackhub.dto.request.*;
 import com.github.ArghgrA.Hackhub.exception.EntityNotFoundException;
 import com.github.ArghgrA.Hackhub.model.hackathon.DefaultHackathon;
-import com.github.ArghgrA.Hackhub.model.hackathon.state.util.HackathonStateEnum;
+import com.github.ArghgrA.Hackhub.model.hackathon.state.util.HackathonStateKind;
 import com.github.ArghgrA.Hackhub.model.other.message.DefaultReport;
 import com.github.ArghgrA.Hackhub.model.other.message.DefaultSubmission;
 import com.github.ArghgrA.Hackhub.model.other.message.DefaultTicket;
@@ -91,7 +91,7 @@ public class StaffHandler {
                 .orElseThrow(() -> new EntityNotFoundException("No Hackathon with that id"));
 
         // check if hackathon still accepts new submission
-        if (hackathon.getState() != HackathonStateEnum.EVALUATION.getInstance()) {
+        if (hackathon.getState() != HackathonStateKind.EVALUATION.getInstance()) {
             throw new IllegalStateException("Hackathon still accepts new submission");
         }
 
