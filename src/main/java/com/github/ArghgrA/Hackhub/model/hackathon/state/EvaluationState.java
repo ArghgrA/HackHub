@@ -12,4 +12,9 @@ public class EvaluationState implements HackathonState {
     public void updateState(AbstractHackathon h) {
         h.setState(HackathonStateKind.FINISHED.getInstance());
     }
+
+    @Override
+    public String getName() {
+        return "EVALUATION";
+    }
 }

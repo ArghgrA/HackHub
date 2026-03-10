@@ -48,7 +48,7 @@ public class StaffHandler {
                 .orElseThrow(() -> new EntityNotFoundException("No User with that id"));
 
         AbstractStaff newStaff = user.transform(dto.role().getInstance().getClass());
-        userRepository.delete(user);
+        userRepository.deleteById(user.getId());
 
         staffRepository.save(newStaff);
 

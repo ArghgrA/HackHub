@@ -12,4 +12,9 @@ public class RegistrationState implements HackathonState {
     public void updateState(AbstractHackathon h) {
         h.setState(HackathonStateKind.COMPETITION.getInstance());
     }
+
+    @Override
+    public String getName() {
+        return "REGISTRATION";
+    }
 }

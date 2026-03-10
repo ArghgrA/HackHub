@@ -11,4 +11,9 @@ public class CompetitionState implements HackathonState {
     public void updateState(AbstractHackathon h) {
         h.setState(HackathonStateKind.EVALUATION.getInstance());
     }
+
+    @Override
+    public String getName() {
+        return "COMPETITION";
+    }
 }

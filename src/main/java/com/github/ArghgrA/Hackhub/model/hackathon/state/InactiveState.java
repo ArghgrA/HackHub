@@ -11,5 +11,12 @@ public class InactiveState implements HackathonState{
     @Override
     public void updateState(AbstractHackathon h) {
         h.setState(HackathonStateKind.REGISTRATION.getInstance());
-    };
+    }
+
+    @Override
+    public String getName() {
+        return "INACTIVE";
+    }
+
+    ;
 }
