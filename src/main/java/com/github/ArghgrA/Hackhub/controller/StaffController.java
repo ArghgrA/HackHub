@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("api/staff")
@@ -27,19 +28,23 @@ public class StaffController {
     }
 
     @PostMapping("/report/team")
-    public ResponseEntity<ReportDTO> reportTeam(ReportTeamRequestDTO dto) {
+    public ResponseEntity<ReportDTO> reportTeam(@Valid @RequestBody ReportTeamRequestDTO dto) {
         ReportDTO response = staffHandler.reportTeam(dto);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @PostMapping("evaluation/new")
-    public ResponseEntity<EvaluationDTO> addEvaluation(AddEvaluationRequestDTO dto) {
+    public ResponseEntity<EvaluationDTO> addEvaluation(@Valid @RequestBody AddEvaluationRequestDTO dto) {
         EvaluationDTO response = staffHandler.addEvaluation(dto);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping("/ticket/get")
-    public ResponseEntity<List<TicketDTO>> geTickets(GetTicketRequestDTO dto) {
+    public ResponseEntity<List<TicketDTO>> geTickets(
+            //@RequestParam GetTicketRequestDTO dto
+            @RequestParam UUID hackathonId
+    ) {
+        GetTicketRequestDTO dto = new GetTicketRequestDTO(hackathonId);
         List<TicketDTO> response = staffHandler.getTicket(dto);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }

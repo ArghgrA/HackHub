@@ -138,7 +138,8 @@ public class TeamHandler {
                 .orElseThrow(() -> new EntityNotFoundException("no Hackathon with that id"));
 
         // check if hackathon is in a state where ticket can be opened
-        if(hackathon.getState() != HackathonStateKind.REGISTRATION.getInstance() ||
+        //nell'if non va messo || ma &&
+        if(hackathon.getState() != HackathonStateKind.REGISTRATION.getInstance() &&
            hackathon.getState() != HackathonStateKind.COMPETITION.getInstance() ) {
             throw new IllegalStateException(String.format("cannot open new ticket in %s state",hackathon.getState().toString()));
         }
@@ -203,6 +204,9 @@ public class TeamHandler {
         AbstractPaymentAddress payment = dto.kind().getAddressInstance();
         payment.addAddress(dto.address());
 
+
+        //set team_id to payment
+        payment.setTeam(team);
         // save payment in db
         paymentRepository.save(payment);
 

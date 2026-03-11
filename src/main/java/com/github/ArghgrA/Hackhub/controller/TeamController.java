@@ -8,6 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("api/team")
@@ -33,19 +36,25 @@ public class TeamController {
     }
 
     @PostMapping("/submission/new")
-    public ResponseEntity<SubmissionDTO> addSubmission(@Valid @RequestBody AddSubmissionRequestDTO dto) {
+    public ResponseEntity<SubmissionDTO> addSubmission(
+            //@Valid @RequestBody AddSubmissionRequestDTO dto
+            @RequestParam("teamId") UUID teamId,
+            @RequestParam("hackathonId") UUID hackathonId,
+            @RequestParam("file") MultipartFile file
+    ) {
+        AddSubmissionRequestDTO dto = new AddSubmissionRequestDTO(teamId, hackathonId, file);
         SubmissionDTO response = teamHandler.addSubmission(dto);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @PostMapping("/invite/new")
-    public ResponseEntity<InviteDTO> inviteUser(InviteUserRequestDTO dto) {
+    public ResponseEntity<InviteDTO> inviteUser(@Valid @RequestBody InviteUserRequestDTO dto) {
         InviteDTO response = teamHandler.inviteUser(dto);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @PostMapping("/payment/new")
-    public ResponseEntity<PaymentDTO> addPayment(AddPaymentMethodRequestDTO dto) {
+    public ResponseEntity<PaymentDTO> addPayment(@Valid @RequestBody AddPaymentMethodRequestDTO dto) {
         PaymentDTO response = teamHandler.addPayment(dto);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }

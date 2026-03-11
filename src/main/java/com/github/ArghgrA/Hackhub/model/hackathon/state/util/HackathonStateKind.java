@@ -16,9 +16,11 @@ public enum HackathonStateKind {
 
     public static HackathonStateKind fromState(HackathonState state) {
         for (HackathonStateKind e : values()) {
-            if (e.instance == state) return e;
+            //if (e.instance == state) return e;
+            //if(e.instance.equals(state)) return e;
+            if (e.instance.getClass().equals(state.getClass())) return e;
         }
 
-        throw new IllegalArgumentException("Unknown HackathonState");
+        throw new IllegalArgumentException("Unknown HackathonState" + state.getClass().getName());
     }
 }

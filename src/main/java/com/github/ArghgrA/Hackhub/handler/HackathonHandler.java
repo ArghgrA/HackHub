@@ -61,6 +61,7 @@ public class HackathonHandler {
                 .setMaxTeamMembers(dto.maxTeamMembers())
                 .setOrganizer(organizer)
                 .setState(new InactiveState())
+                .setPrice(dto.price())
                 .getResult();
 
         organizer.setHackathon(hackathon);
@@ -106,7 +107,8 @@ public class HackathonHandler {
 
         // check if Hackathon exist
         DefaultHackathon hackathon = hackathonRepository
-                .findById(dto.organizerId())
+                //.findById(dto.organizerId()) -> NO
+                .findHackathonByStaff(dto.organizerId())
                 .orElseThrow(() -> new EntityNotFoundException("No Hackathon with that id"));
 
         // check if Mentor exist
