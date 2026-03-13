@@ -1,18 +1,16 @@
 package com.github.ArghgrA.Hackhub.handler;
 
 import com.github.ArghgrA.Hackhub.dto.mapper.*;
-import com.github.ArghgrA.Hackhub.dto.model.InviteDTO;
-import com.github.ArghgrA.Hackhub.dto.model.SubmissionDTO;
-import com.github.ArghgrA.Hackhub.dto.model.TeamDTO;
-import com.github.ArghgrA.Hackhub.dto.model.TicketDTO;
+import com.github.ArghgrA.Hackhub.dto.model.*;
 import com.github.ArghgrA.Hackhub.dto.request.*;
 import com.github.ArghgrA.Hackhub.exception.AlreadyExistingException;
 import com.github.ArghgrA.Hackhub.exception.EntityNotFoundException;
 import com.github.ArghgrA.Hackhub.model.hackathon.DefaultHackathon;
-import com.github.ArghgrA.Hackhub.model.hackathon.state.util.HackathonStateEnum;
+import com.github.ArghgrA.Hackhub.model.hackathon.state.util.HackathonStateKind;
 import com.github.ArghgrA.Hackhub.model.other.message.DefaultInvite;
 import com.github.ArghgrA.Hackhub.model.other.message.DefaultSubmission;
-import com.github.ArghgrA.Hackhub.model.other.message.DefaultTicket;
+import com.github.ArghgrA.Hackhub.model.other.message.ticket.DefaultTicket;
+import com.github.ArghgrA.Hackhub.model.other.payment.address.AbstractPaymentAddress;
 import com.github.ArghgrA.Hackhub.model.team.DefaultTeam;
 import com.github.ArghgrA.Hackhub.model.user.DefaultUser;
 import com.github.ArghgrA.Hackhub.model.user.TeamMember;
@@ -34,11 +32,13 @@ public class TeamHandler {
     private final HackathonRepository<DefaultHackathon> hackathonRepository;
     private final TicketRepository<DefaultTicket> ticketRepository;
     private final SubmissionRepository<DefaultSubmission> submissionRepository;
+    private final PaymentRepository<AbstractPaymentAddress> paymentRepository;
 
     private final TeamMapper teamMapper;
     private final TicketMapper ticketMapper;
     private final SubmissionMapper submissionMapper;
     private final InviteMapper inviteMapper;
+    private final PaymentMapper paymentMapper;
 
     public TeamDTO createTeam(CreateTeamRequestDTO dto) {
         // create new Team with given info
@@ -52,7 +52,6 @@ public class TeamHandler {
 
         // transform User in TeamMember
         TeamMember teamMember = user.transform(TeamMember.class);
-        teamMember.setTeam(newTeam);
         newTeam.addMember(teamMember);
 
         // drop User from db
@@ -61,7 +60,6 @@ public class TeamHandler {
         // persist newTeam and newTeamMember in db
         teamRepository.save(newTeam);
         teamMemberRepository.save(teamMember);
-
 
         return teamMapper.toDTO(newTeam);
     }
@@ -101,7 +99,7 @@ public class TeamHandler {
                         .orElseThrow(() -> new EntityNotFoundException("No Hackathon with that id"));
 
         // check if hackathon accept registration
-        if(hackathon.getState() != HackathonStateEnum.REGISTRATION.getInstance()){
+        if(hackathon.getState() != HackathonStateKind.REGISTRATION.getInstance()){
             throw new IllegalStateException("Hackathon has not opened registration");
         }
 
@@ -116,8 +114,7 @@ public class TeamHandler {
         }
 
         // add team to hackathon
-        team.addHackthon(hackathon);
-        hackathon.addTeam(team);
+        team.addHackathon(hackathon);
 
         // save in db
         teamRepository.save(team);
@@ -141,8 +138,9 @@ public class TeamHandler {
                 .orElseThrow(() -> new EntityNotFoundException("no Hackathon with that id"));
 
         // check if hackathon is in a state where ticket can be opened
-        if(hackathon.getState() != HackathonStateEnum.REGISTRATION.getInstance() ||
-           hackathon.getState() != HackathonStateEnum.COMPETITION.getInstance() ) {
+        //nell'if non va messo || ma &&
+        if(hackathon.getState() != HackathonStateKind.REGISTRATION.getInstance() &&
+           hackathon.getState() != HackathonStateKind.COMPETITION.getInstance() ) {
             throw new IllegalStateException(String.format("cannot open new ticket in %s state",hackathon.getState().toString()));
         }
 
@@ -175,7 +173,7 @@ public class TeamHandler {
                 .orElseThrow(() -> new EntityNotFoundException("no Hackathon with that id"));
 
         // check if hackathon is in a state where submission can be added
-        if(hackathon.getState() != HackathonStateEnum.COMPETITION.getInstance() ) {
+        if(hackathon.getState() != HackathonStateKind.COMPETITION.getInstance() ) {
             throw new IllegalStateException(String.format("cannot open new ticket in %s state",hackathon.getState().toString()));
         }
 
@@ -194,5 +192,27 @@ public class TeamHandler {
         submissionRepository.save(submission);
 
         return submissionMapper.toDto(submission);
+    }
+
+    public PaymentDTO addPayment(AddPaymentMethodRequestDTO dto) {
+        // retrieve team from db
+        DefaultTeam team = teamRepository
+                .findById(dto.teamId())
+                .orElseThrow(() -> new EntityNotFoundException("No team with that id"));
+
+        // create payment
+        AbstractPaymentAddress payment = dto.kind().getAddressInstance();
+        payment.addAddress(dto.address());
+
+
+        //set team_id to payment
+        payment.setTeam(team);
+        // save payment in db
+        paymentRepository.save(payment);
+
+        // add payment to team
+        team.addPaymentAddress(payment);
+
+        return paymentMapper.toDTO(payment);
     }
 }

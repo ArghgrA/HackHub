@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @AllArgsConstructor @Getter
-public enum HackathonStateEnum {
+public enum HackathonStateKind {
     INACTIVE(InactiveState.INSTANCE),
     REGISTRATION(RegistrationState.INSTANCE),
     COMPETITION(CompetitionState.INSTANCE),
@@ -14,11 +14,13 @@ public enum HackathonStateEnum {
 
     private final HackathonState instance;
 
-    public static HackathonStateEnum fromState(HackathonState state) {
-        for (HackathonStateEnum e : values()) {
-            if (e.instance == state) return e;
+    public static HackathonStateKind fromState(HackathonState state) {
+        for (HackathonStateKind e : values()) {
+            //if (e.instance == state) return e;
+            //if(e.instance.equals(state)) return e;
+            if (e.instance.getClass().equals(state.getClass())) return e;
         }
 
-        throw new IllegalArgumentException("Unknown HackathonState");
+        throw new IllegalArgumentException("Unknown HackathonState" + state.getClass().getName());
     }
 }

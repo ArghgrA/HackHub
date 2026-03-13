@@ -10,7 +10,5 @@ import java.util.List;
 public interface TeamMapper {
     TeamDTO toDTO(DefaultTeam team);
 
-    List<DefaultTeam> toDTOList(List<DefaultTeam> teams);
-
-    DefaultTeam toEntity(TeamDTO dto);
+    List<TeamDTO> toDTOList(List<DefaultTeam> teams);
 }

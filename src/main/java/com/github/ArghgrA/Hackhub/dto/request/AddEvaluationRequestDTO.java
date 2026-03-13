@@ -1,8 +1,6 @@
 package com.github.ArghgrA.Hackhub.dto.request;
 
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 
 import java.util.UUID;
 
@@ -17,7 +15,9 @@ public record AddEvaluationRequestDTO(
         UUID hackathonId,
 
         @NotNull(message = "{AddEvaluationRequestDTO.score.NotNull}")
-        @Size(max = 10, message = "{AddEvaluationRequestDTO.score.Size}")
+        //@Size(max = 10, message = "{AddEvaluationRequestDTO.score.Size}")
+        @Min(value = 0, message = "{AddEvaluationRequestDTO.score.Min}")
+        @Max(value = 10, message = "{AddEvaluationRequestDTO.score.Max}")
         Integer score,
 
         @NotEmpty(message = "{AddEvaluationRequestDTO.details.NotEmpty}")

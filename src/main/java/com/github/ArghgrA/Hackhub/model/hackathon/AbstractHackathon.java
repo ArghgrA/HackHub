@@ -12,6 +12,7 @@ import com.github.ArghgrA.Hackhub.model.user.staff.Organizer;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -34,8 +35,8 @@ public abstract class AbstractHackathon implements Hackathon<UUID>/*, HackathonS
     @OneToOne @JoinColumn(name = "judge_id")
     private Judge judge;
 
-    @OneToMany(mappedBy = "hackathon")
-    private List<Mentor> mentors;
+    @OneToMany(mappedBy = "hackathon", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Mentor> mentors = new LinkedList<>();
 
     private String name;
 
@@ -43,11 +44,15 @@ public abstract class AbstractHackathon implements Hackathon<UUID>/*, HackathonS
 
     private Integer maxTeamMembers;
 
+    private BigDecimal price;
+
+    private String position;
+
     @ManyToMany
     @JoinTable(name = "team_hackathon",
             joinColumns = @JoinColumn(name = "hackathon_id"),
             inverseJoinColumns = @JoinColumn(name = "team_id"))
-    private List<AbstractTeam> teams;
+    private List<AbstractTeam> teams = new LinkedList<>();
 
     @Convert(converter = HackathonStateConverter.class)
     private HackathonState state;
@@ -60,7 +65,6 @@ public abstract class AbstractHackathon implements Hackathon<UUID>/*, HackathonS
             case Organizer o -> this.organizer = o;
             case Judge j -> this.judge = j;
             case Mentor m -> {
-                if (this.mentors == null) this.mentors = new LinkedList<>();
                 if (!this.mentors.contains(m)) this.mentors.add(m);
             }
             default -> throw new IllegalArgumentException("Unknown Staff");
@@ -69,8 +73,10 @@ public abstract class AbstractHackathon implements Hackathon<UUID>/*, HackathonS
 
     public void addTeam(AbstractTeam team){
         if(team == null) return;
-        if (teams == null) teams = new LinkedList<>();
-        if (!teams.contains(team)) teams.add(team);
+        if (!teams.contains(team)) {
+            teams.add(team);
+            team.addHackathon(this);
+        }
     }
 
     public void updateState() {

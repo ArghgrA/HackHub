@@ -8,12 +8,13 @@ import com.github.ArghgrA.Hackhub.dto.model.TicketDTO;
 import com.github.ArghgrA.Hackhub.dto.request.*;
 import com.github.ArghgrA.Hackhub.exception.EntityNotFoundException;
 import com.github.ArghgrA.Hackhub.model.hackathon.DefaultHackathon;
-import com.github.ArghgrA.Hackhub.model.hackathon.state.util.HackathonStateEnum;
+import com.github.ArghgrA.Hackhub.model.hackathon.state.util.HackathonStateKind;
 import com.github.ArghgrA.Hackhub.model.other.message.DefaultReport;
 import com.github.ArghgrA.Hackhub.model.other.message.DefaultSubmission;
-import com.github.ArghgrA.Hackhub.model.other.message.DefaultTicket;
+import com.github.ArghgrA.Hackhub.model.other.message.ticket.DefaultTicket;
 import com.github.ArghgrA.Hackhub.model.other.message.evaluation.DefaultEvaluation;
 import com.github.ArghgrA.Hackhub.model.other.message.evaluation.Score;
+import com.github.ArghgrA.Hackhub.model.other.message.ticket.TicketStateKind;
 import com.github.ArghgrA.Hackhub.model.team.DefaultTeam;
 import com.github.ArghgrA.Hackhub.model.user.DefaultUser;
 import com.github.ArghgrA.Hackhub.model.user.staff.AbstractStaff;
@@ -48,7 +49,7 @@ public class StaffHandler {
                 .orElseThrow(() -> new EntityNotFoundException("No User with that id"));
 
         AbstractStaff newStaff = user.transform(dto.role().getInstance().getClass());
-        userRepository.delete(user);
+        userRepository.deleteById(user.getId());
 
         staffRepository.save(newStaff);
 
@@ -91,7 +92,7 @@ public class StaffHandler {
                 .orElseThrow(() -> new EntityNotFoundException("No Hackathon with that id"));
 
         // check if hackathon still accepts new submission
-        if (hackathon.getState() != HackathonStateEnum.EVALUATION.getInstance()) {
+        if (hackathon.getState() != HackathonStateKind.EVALUATION.getInstance()) {
             throw new IllegalStateException("Hackathon still accepts new submission");
         }
 
@@ -126,7 +127,9 @@ public class StaffHandler {
                 .findById(dto.ticketId())
                 .orElseThrow(() -> new EntityNotFoundException("No Ticket with that id"));
 
-        ticketRepository.delete(ticket);
+        ticket.setState(TicketStateKind.CLOSED);
+
+        ticketRepository.save(ticket);
     }
 
     public List<TicketDTO> getTicket(GetTicketRequestDTO dto) {

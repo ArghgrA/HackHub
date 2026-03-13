@@ -10,4 +10,9 @@ public class FinishedState implements HackathonState {
     public void updateState(AbstractHackathon h) {
         throw new RuntimeException("Cannot update Hackathon in Finished state");
     }
+
+    @Override
+    public String getName() {
+        return "FINISHED";
+    }
 }

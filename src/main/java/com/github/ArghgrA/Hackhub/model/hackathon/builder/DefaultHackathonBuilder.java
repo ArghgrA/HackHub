@@ -9,6 +9,7 @@ import com.github.ArghgrA.Hackhub.model.user.staff.Judge;
 import com.github.ArghgrA.Hackhub.model.user.staff.Mentor;
 import com.github.ArghgrA.Hackhub.model.user.staff.Organizer;
 
+import java.math.BigDecimal;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -61,6 +62,16 @@ public class DefaultHackathonBuilder implements HackathonBuilder<DefaultHackatho
 
     public DefaultHackathonBuilder setState(HackathonState state) {
         hackathon.setState(state);
+        return this;
+    }
+
+    public DefaultHackathonBuilder setPrice(BigDecimal price) {
+        hackathon.setPrice(price);
+        return this;
+    }
+
+    public DefaultHackathonBuilder setPosition(String position){
+        hackathon.setPosition(position);
         return this;
     }
 

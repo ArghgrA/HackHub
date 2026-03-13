@@ -1,5 +1,6 @@
 package com.github.ArghgrA.Hackhub.model.user;
 
+import com.github.ArghgrA.Hackhub.model.team.AbstractTeam;
 import com.github.ArghgrA.Hackhub.model.team.DefaultTeam;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
@@ -14,7 +15,7 @@ import java.util.function.UnaryOperator;
 @Entity
 public class TeamMember extends AbstractUser {
     @ManyToOne @JoinColumn(name = "team_id")
-    private DefaultTeam team;
+    private AbstractTeam team;
 
     @Override @SuppressWarnings("all")
     public <T extends AbstractUser> T transform(Class<T> type) {

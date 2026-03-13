@@ -3,8 +3,10 @@ package com.github.ArghgrA.Hackhub.dto.model;
 import java.util.UUID;
 
 public record TicketDTO(
-        UUID ticketId,
+        UUID id,
         UUID teamId,
-        String message
+        UUID hackathonId,
+        String message,
+        String state
 ) {
 }
