@@ -49,8 +49,8 @@ public class StaffController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @DeleteMapping("/ticket/delete")
-    public void closeTicket(CloseTicketRequestDTO dto) {
+    @PostMapping("/ticket/close")
+    public void closeTicket(@RequestBody CloseTicketRequestDTO dto) {
         staffHandler.closeTicket(dto);
     }
 }

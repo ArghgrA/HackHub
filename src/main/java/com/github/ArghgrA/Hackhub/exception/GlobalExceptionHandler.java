@@ -45,4 +45,11 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse(ex.getMessage()));
     }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public  ResponseEntity<ErrorResponse> handleConstraintViolation(IllegalStateException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(ex.getMessage()));
+    }
 }

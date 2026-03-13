@@ -1,7 +1,7 @@
 package com.github.ArghgrA.Hackhub.dto.mapper;
 
 import com.github.ArghgrA.Hackhub.dto.model.TicketDTO;
-import com.github.ArghgrA.Hackhub.model.other.message.DefaultTicket;
+import com.github.ArghgrA.Hackhub.model.other.message.ticket.DefaultTicket;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

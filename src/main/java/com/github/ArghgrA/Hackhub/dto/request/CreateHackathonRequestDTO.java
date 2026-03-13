@@ -38,6 +38,9 @@ public record CreateHackathonRequestDTO(
         @Future(message = "{CreateHackathonRequestDTO.competitionEnd.Future}")
         LocalDateTime competitionEnd,
 
+        @NotEmpty(message = "{CreateHackathonRequestDTO.position.NotNull}")
+        String position,
+
         @Min(value = 0, message = "{CreateHackathonRequestDTO.price.min}")
         BigDecimal price
 ) {}

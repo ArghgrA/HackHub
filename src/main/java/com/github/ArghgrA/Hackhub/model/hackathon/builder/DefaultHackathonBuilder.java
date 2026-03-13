@@ -70,6 +70,11 @@ public class DefaultHackathonBuilder implements HackathonBuilder<DefaultHackatho
         return this;
     }
 
+    public DefaultHackathonBuilder setPosition(String position){
+        hackathon.setPosition(position);
+        return this;
+    }
+
     public DefaultHackathon getResult() {
         DefaultHackathon tmp = hackathon;
 

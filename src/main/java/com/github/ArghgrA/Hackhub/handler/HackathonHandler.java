@@ -62,6 +62,7 @@ public class HackathonHandler {
                 .setOrganizer(organizer)
                 .setState(new InactiveState())
                 .setPrice(dto.price())
+                .setPosition(dto.position())
                 .getResult();
 
         organizer.setHackathon(hackathon);

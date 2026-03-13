@@ -11,9 +11,10 @@ import com.github.ArghgrA.Hackhub.model.hackathon.DefaultHackathon;
 import com.github.ArghgrA.Hackhub.model.hackathon.state.util.HackathonStateKind;
 import com.github.ArghgrA.Hackhub.model.other.message.DefaultReport;
 import com.github.ArghgrA.Hackhub.model.other.message.DefaultSubmission;
-import com.github.ArghgrA.Hackhub.model.other.message.DefaultTicket;
+import com.github.ArghgrA.Hackhub.model.other.message.ticket.DefaultTicket;
 import com.github.ArghgrA.Hackhub.model.other.message.evaluation.DefaultEvaluation;
 import com.github.ArghgrA.Hackhub.model.other.message.evaluation.Score;
+import com.github.ArghgrA.Hackhub.model.other.message.ticket.TicketStateKind;
 import com.github.ArghgrA.Hackhub.model.team.DefaultTeam;
 import com.github.ArghgrA.Hackhub.model.user.DefaultUser;
 import com.github.ArghgrA.Hackhub.model.user.staff.AbstractStaff;
@@ -126,7 +127,9 @@ public class StaffHandler {
                 .findById(dto.ticketId())
                 .orElseThrow(() -> new EntityNotFoundException("No Ticket with that id"));
 
-        ticketRepository.delete(ticket);
+        ticket.setState(TicketStateKind.CLOSED);
+
+        ticketRepository.save(ticket);
     }
 
     public List<TicketDTO> getTicket(GetTicketRequestDTO dto) {

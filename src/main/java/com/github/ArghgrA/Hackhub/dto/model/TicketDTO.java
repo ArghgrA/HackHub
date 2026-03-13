@@ -6,6 +6,7 @@ public record TicketDTO(
         UUID id,
         UUID teamId,
         UUID hackathonId,
-        String message
+        String message,
+        String state
 ) {
 }

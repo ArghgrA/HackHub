@@ -9,7 +9,7 @@ import com.github.ArghgrA.Hackhub.model.hackathon.DefaultHackathon;
 import com.github.ArghgrA.Hackhub.model.hackathon.state.util.HackathonStateKind;
 import com.github.ArghgrA.Hackhub.model.other.message.DefaultInvite;
 import com.github.ArghgrA.Hackhub.model.other.message.DefaultSubmission;
-import com.github.ArghgrA.Hackhub.model.other.message.DefaultTicket;
+import com.github.ArghgrA.Hackhub.model.other.message.ticket.DefaultTicket;
 import com.github.ArghgrA.Hackhub.model.other.payment.address.AbstractPaymentAddress;
 import com.github.ArghgrA.Hackhub.model.team.DefaultTeam;
 import com.github.ArghgrA.Hackhub.model.user.DefaultUser;

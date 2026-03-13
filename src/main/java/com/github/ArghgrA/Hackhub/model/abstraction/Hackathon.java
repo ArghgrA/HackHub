@@ -18,4 +18,5 @@ public interface Hackathon<I extends Comparable<I>> {
     Judge getJudge();
     List<Mentor> getMentors();
     BigDecimal getPrice();
+    String getPosition();
 }

@@ -46,6 +46,8 @@ public abstract class AbstractHackathon implements Hackathon<UUID>/*, HackathonS
 
     private BigDecimal price;
 
+    private String position;
+
     @ManyToMany
     @JoinTable(name = "team_hackathon",
             joinColumns = @JoinColumn(name = "hackathon_id"),

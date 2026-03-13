@@ -15,6 +15,7 @@ public record HackathonDTO(
         LocalDateTime registrationStart,
         LocalDateTime registrationEnd,
         LocalDateTime competitionStart,
-        LocalDateTime competitionEnd
+        LocalDateTime competitionEnd,
+        String position
 ) {
 }
