@@ -8,11 +8,11 @@ import jakarta.persistence.Converter;
 public class HackathonStateConverter implements AttributeConverter<HackathonState,String> {
     @Override
     public String convertToDatabaseColumn(HackathonState state) {
-        return HackathonStateEnum.fromState(state).name();
+        return HackathonStateKind.fromState(state).name();
     }
 
     @Override
     public HackathonState convertToEntityAttribute(String s) {
-        return HackathonStateEnum.valueOf(s).getInstance();
+        return HackathonStateKind.valueOf(s).getInstance();
     }
 }

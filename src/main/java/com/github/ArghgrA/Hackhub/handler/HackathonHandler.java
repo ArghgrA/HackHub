@@ -1,21 +1,19 @@
 package com.github.ArghgrA.Hackhub.handler;
 
-import com.github.ArghgrA.Hackhub.dto.mapper.AddMentorToHackathonMapper;
-import com.github.ArghgrA.Hackhub.dto.mapper.CreateHackathonMapper;
-import com.github.ArghgrA.Hackhub.dto.mapper.AddJudgeToHackathonMapper;
+import com.github.ArghgrA.Hackhub.dto.mapper.*;
+import com.github.ArghgrA.Hackhub.dto.model.HackathonDTO;
+import com.github.ArghgrA.Hackhub.dto.model.StaffDTO;
 import com.github.ArghgrA.Hackhub.dto.request.AddJudgeToHackathonRequestDTO;
 import com.github.ArghgrA.Hackhub.dto.request.AddMentorToHackathonRequestDTO;
 import com.github.ArghgrA.Hackhub.dto.request.CreateHackathonRequestDTO;
-import com.github.ArghgrA.Hackhub.dto.response.AddJudgeToHackathonResponseDTO;
-import com.github.ArghgrA.Hackhub.dto.response.AddMentorToHackathonResponseDTO;
-import com.github.ArghgrA.Hackhub.dto.response.CreateHackathonResponseDTO;
 import com.github.ArghgrA.Hackhub.exception.AlreadyExistingException;
 import com.github.ArghgrA.Hackhub.exception.EntityNotFoundException;
 import com.github.ArghgrA.Hackhub.model.hackathon.DefaultHackathon;
 import com.github.ArghgrA.Hackhub.model.hackathon.builder.DefaultHackathonBuilder;
 import com.github.ArghgrA.Hackhub.model.hackathon.state.InactiveState;
-import com.github.ArghgrA.Hackhub.model.hackathon.state.util.HackathonStateEnum;
+import com.github.ArghgrA.Hackhub.model.hackathon.state.util.HackathonStateKind;
 import com.github.ArghgrA.Hackhub.model.other.Interval;
+import com.github.ArghgrA.Hackhub.model.user.staff.AbstractStaff;
 import com.github.ArghgrA.Hackhub.model.user.staff.Judge;
 import com.github.ArghgrA.Hackhub.model.user.staff.Mentor;
 import com.github.ArghgrA.Hackhub.model.user.staff.Organizer;
@@ -33,15 +31,12 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class HackathonHandler {
     private final HackathonRepository<DefaultHackathon> hackathonRepository;
-    private final UserRepository<Organizer> organizerRepository;
-    private final UserRepository<Judge> judgeRepository;
-    private final UserRepository<Mentor> mentorRepository;
-    private final CreateHackathonMapper createHackathonMapper;
-    private final AddJudgeToHackathonMapper judgeToHackathonMapper;
-    private final AddMentorToHackathonMapper mentorToHackathonMapper;
+    private final UserRepository<AbstractStaff> staffRepository;
+    private final StaffMapper staffMapper;
+    private final HackathonMapper hackathonMapper;
 
-    public CreateHackathonResponseDTO createHackathon(CreateHackathonRequestDTO dto) {
-        Organizer organizer = organizerRepository
+    public HackathonDTO createHackathon(CreateHackathonRequestDTO dto) {
+        Organizer organizer = (Organizer) staffRepository
                 .findById(dto.organizerId())
                 .orElseThrow(() -> new EntityNotFoundException("No Organizer with that id"));
 
@@ -66,17 +61,19 @@ public class HackathonHandler {
                 .setMaxTeamMembers(dto.maxTeamMembers())
                 .setOrganizer(organizer)
                 .setState(new InactiveState())
+                .setPrice(dto.price())
+                .setPosition(dto.position())
                 .getResult();
 
         organizer.setHackathon(hackathon);
 
         hackathonRepository.save(hackathon);
 
-        return createHackathonMapper.toResponse(hackathon);
+        return hackathonMapper.toDTO(hackathon);
     }
 
-    public AddJudgeToHackathonResponseDTO addJudge(AddJudgeToHackathonRequestDTO dto) {
-        Organizer organizer = organizerRepository
+    public StaffDTO addJudge(AddJudgeToHackathonRequestDTO dto) {
+        Organizer organizer = (Organizer) staffRepository
                 .findById(dto.organizerId())
                 .orElseThrow(() -> new EntityNotFoundException("No Organizer with that id"));
 
@@ -89,7 +86,7 @@ public class HackathonHandler {
         if (hackathon.getJudge() != null) throw new AlreadyExistingException("Hakathon already has a Judge");
 
         // check if Judge exist
-        Judge judge = judgeRepository
+        Judge judge = (Judge) staffRepository
                 .findById(dto.judgeId())
                 .orElseThrow(() -> new EntityNotFoundException("Judge not exist"));
 
@@ -101,23 +98,24 @@ public class HackathonHandler {
         hackathon.addStaff(judge);
         hackathonRepository.save(hackathon);
 
-        return judgeToHackathonMapper.toResponse(judge);
+        return staffMapper.toDTO(judge);
     }
 
-    public AddMentorToHackathonResponseDTO addMentor(AddMentorToHackathonRequestDTO dto) {
-        Organizer organizer = organizerRepository
+    public StaffDTO addMentor(AddMentorToHackathonRequestDTO dto) {
+        Organizer organizer = (Organizer) staffRepository
                 .findById(dto.organizerId())
                 .orElseThrow(() -> new EntityNotFoundException("No Organizer with that id"));
 
         // check if Hackathon exist
         DefaultHackathon hackathon = hackathonRepository
-                .findById(dto.organizerId())
-                .orElseThrow(() -> new EntityNotFoundException("HackathonNotExist"));
+                //.findById(dto.organizerId()) -> NO
+                .findHackathonByStaff(dto.organizerId())
+                .orElseThrow(() -> new EntityNotFoundException("No Hackathon with that id"));
 
         // check if Mentor exist
-        Mentor mentor = mentorRepository
+        Mentor mentor = (Mentor) staffRepository
                 .findById(dto.mentorId())
-                .orElseThrow(() -> new EntityNotFoundException("MentorNotExist"));
+                .orElseThrow(() -> new EntityNotFoundException("No Mentor with that id"));
 
 
         // check if mentor is already in one hackathon
@@ -128,7 +126,7 @@ public class HackathonHandler {
         hackathon.addStaff(mentor);
         hackathonRepository.save(hackathon);
 
-        return mentorToHackathonMapper.toResponse(mentor);
+        return staffMapper.toDTO(mentor);
     }
 
     @Transactional
@@ -140,8 +138,8 @@ public class HackathonHandler {
         hackathonRepository.findHackathonByInstant(now)
                 .stream()
                 // make sure that only hackathon that are in REGISTRATION or COMPETITION state can be updated
-                .filter(h -> h.getState() == HackathonStateEnum.REGISTRATION.getInstance() ||
-                        h.getState() == HackathonStateEnum.COMPETITION.getInstance())
+                .filter(h -> h.getState() == HackathonStateKind.REGISTRATION.getInstance() ||
+                        h.getState() == HackathonStateKind.COMPETITION.getInstance())
                 .forEach(DefaultHackathon::updateState);
     }
 }

@@ -4,4 +4,5 @@ import com.github.ArghgrA.Hackhub.model.hackathon.AbstractHackathon;
 
 public interface HackathonState {
     void updateState(AbstractHackathon h);
+    String getName();
 }

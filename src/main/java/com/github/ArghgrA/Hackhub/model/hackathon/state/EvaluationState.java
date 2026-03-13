@@ -1,7 +1,7 @@
 package com.github.ArghgrA.Hackhub.model.hackathon.state;
 
 import com.github.ArghgrA.Hackhub.model.hackathon.AbstractHackathon;
-import com.github.ArghgrA.Hackhub.model.hackathon.state.util.HackathonStateEnum;
+import com.github.ArghgrA.Hackhub.model.hackathon.state.util.HackathonStateKind;
 import lombok.Getter;
 
 @Getter
@@ -10,6 +10,11 @@ public class EvaluationState implements HackathonState {
 
     @Override
     public void updateState(AbstractHackathon h) {
-        h.setState(HackathonStateEnum.FINISHED.getInstance());
+        h.setState(HackathonStateKind.FINISHED.getInstance());
+    }
+
+    @Override
+    public String getName() {
+        return "EVALUATION";
     }
 }

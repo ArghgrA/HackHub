@@ -1,25 +1,26 @@
 package com.github.ArghgrA.Hackhub.handler;
 
-import com.github.ArghgrA.Hackhub.dto.mapper.CreateTeamMapper;
-import com.github.ArghgrA.Hackhub.dto.mapper.SubscribeTeamMapper;
-import com.github.ArghgrA.Hackhub.dto.request.CreateTeamRequestDTO;
-import com.github.ArghgrA.Hackhub.dto.request.SubscribeTeamToHackathonRequestDTO;
-import com.github.ArghgrA.Hackhub.dto.response.CreateTeamResponseDTO;
-import com.github.ArghgrA.Hackhub.dto.response.SubscribeTeamToHackathonResponseDTO;
+import com.github.ArghgrA.Hackhub.dto.mapper.*;
+import com.github.ArghgrA.Hackhub.dto.model.*;
+import com.github.ArghgrA.Hackhub.dto.request.*;
 import com.github.ArghgrA.Hackhub.exception.AlreadyExistingException;
 import com.github.ArghgrA.Hackhub.exception.EntityNotFoundException;
-import com.github.ArghgrA.Hackhub.model.hackathon.AbstractHackathon;
 import com.github.ArghgrA.Hackhub.model.hackathon.DefaultHackathon;
-import com.github.ArghgrA.Hackhub.model.hackathon.state.HackathonState;
-import com.github.ArghgrA.Hackhub.model.hackathon.state.util.HackathonStateEnum;
+import com.github.ArghgrA.Hackhub.model.hackathon.state.util.HackathonStateKind;
+import com.github.ArghgrA.Hackhub.model.other.message.DefaultInvite;
+import com.github.ArghgrA.Hackhub.model.other.message.DefaultSubmission;
+import com.github.ArghgrA.Hackhub.model.other.message.ticket.DefaultTicket;
+import com.github.ArghgrA.Hackhub.model.other.payment.address.AbstractPaymentAddress;
 import com.github.ArghgrA.Hackhub.model.team.DefaultTeam;
 import com.github.ArghgrA.Hackhub.model.user.DefaultUser;
 import com.github.ArghgrA.Hackhub.model.user.TeamMember;
-import com.github.ArghgrA.Hackhub.repository.HackathonRepository;
-import com.github.ArghgrA.Hackhub.repository.TeamRepository;
-import com.github.ArghgrA.Hackhub.repository.UserRepository;
+import com.github.ArghgrA.Hackhub.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -27,11 +28,19 @@ public class TeamHandler {
     private final UserRepository<DefaultUser> userRepository;
     private final UserRepository<TeamMember> teamMemberRepository;
     private final TeamRepository<DefaultTeam> teamRepository;
+    private final InviteRepository<DefaultInvite> inviteRepository;
     private final HackathonRepository<DefaultHackathon> hackathonRepository;
-    private final CreateTeamMapper createTeamMapper;
-    private final SubscribeTeamMapper subscribeTeamMapper;
+    private final TicketRepository<DefaultTicket> ticketRepository;
+    private final SubmissionRepository<DefaultSubmission> submissionRepository;
+    private final PaymentRepository<AbstractPaymentAddress> paymentRepository;
 
-    public CreateTeamResponseDTO createTeam(CreateTeamRequestDTO dto) {
+    private final TeamMapper teamMapper;
+    private final TicketMapper ticketMapper;
+    private final SubmissionMapper submissionMapper;
+    private final InviteMapper inviteMapper;
+    private final PaymentMapper paymentMapper;
+
+    public TeamDTO createTeam(CreateTeamRequestDTO dto) {
         // create new Team with given info
         DefaultTeam newTeam = new DefaultTeam();
         newTeam.setName(dto.name());
@@ -43,7 +52,6 @@ public class TeamHandler {
 
         // transform User in TeamMember
         TeamMember teamMember = user.transform(TeamMember.class);
-        teamMember.setTeam(newTeam);
         newTeam.addMember(teamMember);
 
         // drop User from db
@@ -53,33 +61,158 @@ public class TeamHandler {
         teamRepository.save(newTeam);
         teamMemberRepository.save(teamMember);
 
-
-        return createTeamMapper.toResponse(newTeam);
+        return teamMapper.toDTO(newTeam);
     }
 
-    public SubscribeTeamToHackathonResponseDTO subscribeTeam(SubscribeTeamToHackathonRequestDTO dto){
+    public InviteDTO inviteUser(InviteUserRequestDTO request) {
+        // check if invited user exist
+        DefaultUser user = userRepository
+                .findById(request.userId())
+                .orElseThrow(() -> new EntityNotFoundException("User not exist"));
+
+        // check if team exist
+        // ( should never throw error since a TeamMember is always in a Team )
+        DefaultTeam team = teamRepository
+                .findById(request.teamId())
+                .orElseThrow(() -> new EntityNotFoundException("Team not exist"));
+
+        // check if the user was already invited by another TeamMember of the same team
+        Optional<DefaultInvite> alreadyExistingInvite = inviteRepository.findInviteByTeam(request.userId(),request.teamId());
+        if(alreadyExistingInvite.isPresent()) throw new AlreadyExistingException("User already invited from Team");
+
+        // create new invite with previous data
+        DefaultInvite newInvite = new DefaultInvite();
+        newInvite.setReceiver(user);
+        newInvite.setSender(team);
+        newInvite.setMessage(request.message());
+
+        // persist in db
+        inviteRepository.save(newInvite);
+
+        return inviteMapper.toDto(newInvite);
+    }
+
+    public void subscribeTeam(SubscribeTeamRequestDTO dto){
+        // retrieve hackathon from db
         DefaultHackathon hackathon = hackathonRepository
                         .findById(dto.idHackathon())
                         .orElseThrow(() -> new EntityNotFoundException("No Hackathon with that id"));
 
-        if(hackathon.getState() != HackathonStateEnum.REGISTRATION.getInstance()){
+        // check if hackathon accept registration
+        if(hackathon.getState() != HackathonStateKind.REGISTRATION.getInstance()){
             throw new IllegalStateException("Hackathon has not opened registration");
         }
 
+        // retrieve team from db
         DefaultTeam team = teamRepository
                 .findById(dto.idTeam())
                 .orElseThrow(() -> new EntityNotFoundException("No Team with that id"));
 
+        // check if team is already participating in the hackathon
         if(teamRepository.isParticipating(team.getId(), hackathon.getId())){
             throw new AlreadyExistingException("Team is already in the Hackathon");
         }
 
-        team.addHackthon(hackathon);
-        hackathon.addTeam(team);
+        // add team to hackathon
+        team.addHackathon(hackathon);
 
+        // save in db
         teamRepository.save(team);
         hackathonRepository.save(hackathon);
+    }
 
-        return subscribeTeamMapper.toResponse(team);
+    public TicketDTO createTicket(AddTicketRequestDTO dto) {
+        // retrieve team from db
+        DefaultTeam team = teamRepository
+                .findById(dto.teamId())
+                .orElseThrow(() -> new EntityNotFoundException("No Team with that id"));
+
+        // check if team is not in the hackathon
+        if(!teamRepository.isParticipating(dto.teamId(),dto.hackathonId())) {
+            throw new IllegalStateException("Team is not in the selected Hackathon");
+        }
+
+        // retrieve hackathon from db
+        DefaultHackathon hackathon = hackathonRepository
+                .findById(dto.hackathonId())
+                .orElseThrow(() -> new EntityNotFoundException("no Hackathon with that id"));
+
+        // check if hackathon is in a state where ticket can be opened
+        //nell'if non va messo || ma &&
+        if(hackathon.getState() != HackathonStateKind.REGISTRATION.getInstance() &&
+           hackathon.getState() != HackathonStateKind.COMPETITION.getInstance() ) {
+            throw new IllegalStateException(String.format("cannot open new ticket in %s state",hackathon.getState().toString()));
+        }
+
+        // create new ticket
+        DefaultTicket ticket = new DefaultTicket();
+        ticket.setMessage(dto.message());
+        ticket.setSender(team);
+        ticket.setReceiver(hackathon);
+
+        // save in db
+        ticketRepository.save(ticket);
+
+        return ticketMapper.toDTO(ticket);
+    }
+
+    public SubmissionDTO addSubmission(AddSubmissionRequestDTO dto) {
+        // retrieve team from db
+        DefaultTeam team = teamRepository
+                .findById(dto.teamId())
+                .orElseThrow(() -> new EntityNotFoundException("No Team with that id"));
+
+        // check if team is not in the hackathon
+        if(!teamRepository.isParticipating(dto.teamId(),dto.hackathonId())) {
+            throw new IllegalStateException("Team is not in the selected Hackathon");
+        }
+
+        // retrieve hackathon from db
+        DefaultHackathon hackathon = hackathonRepository
+                .findById(dto.hackathonId())
+                .orElseThrow(() -> new EntityNotFoundException("no Hackathon with that id"));
+
+        // check if hackathon is in a state where submission can be added
+        if(hackathon.getState() != HackathonStateKind.COMPETITION.getInstance() ) {
+            throw new IllegalStateException(String.format("cannot open new ticket in %s state",hackathon.getState().toString()));
+        }
+
+        // create new submission
+        DefaultSubmission submission = new DefaultSubmission();
+        try {
+            submission.setMessage(ArrayUtils.toObject(dto.file().getBytes()));
+        } catch (IOException ex) { ex.printStackTrace(); }
+        submission.setReceiver(hackathon);
+        submission.setSender(team);
+
+        // delete already existing submission if exist
+        submissionRepository.findByTeam(team.getId()).ifPresent(submissionRepository::delete);
+
+        // save in db
+        submissionRepository.save(submission);
+
+        return submissionMapper.toDto(submission);
+    }
+
+    public PaymentDTO addPayment(AddPaymentMethodRequestDTO dto) {
+        // retrieve team from db
+        DefaultTeam team = teamRepository
+                .findById(dto.teamId())
+                .orElseThrow(() -> new EntityNotFoundException("No team with that id"));
+
+        // create payment
+        AbstractPaymentAddress payment = dto.kind().getAddressInstance();
+        payment.addAddress(dto.address());
+
+
+        //set team_id to payment
+        payment.setTeam(team);
+        // save payment in db
+        paymentRepository.save(payment);
+
+        // add payment to team
+        team.addPaymentAddress(payment);
+
+        return paymentMapper.toDTO(payment);
     }
 }

@@ -5,6 +5,7 @@ import com.github.ArghgrA.Hackhub.model.user.staff.Judge;
 import com.github.ArghgrA.Hackhub.model.user.staff.Mentor;
 import com.github.ArghgrA.Hackhub.model.user.staff.Organizer;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface Hackathon<I extends Comparable<I>> {
@@ -16,4 +17,6 @@ public interface Hackathon<I extends Comparable<I>> {
     Organizer getOrganizer();
     Judge getJudge();
     List<Mentor> getMentors();
+    BigDecimal getPrice();
+    String getPosition();
 }

@@ -1,6 +1,8 @@
 package com.github.ArghgrA.Hackhub.dto.request;
 
 import jakarta.validation.constraints.*;
+
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -34,5 +36,11 @@ public record CreateHackathonRequestDTO(
 
         @NotNull(message = "{CreateHackathonRequestDTO.competitionEnd.NotNull}")
         @Future(message = "{CreateHackathonRequestDTO.competitionEnd.Future}")
-        LocalDateTime competitionEnd
+        LocalDateTime competitionEnd,
+
+        @NotEmpty(message = "{CreateHackathonRequestDTO.position.NotNull}")
+        String position,
+
+        @Min(value = 0, message = "{CreateHackathonRequestDTO.price.min}")
+        BigDecimal price
 ) {}
