@@ -6,8 +6,8 @@ import java.util.UUID;
 
 public record SubscribeTeamRequestDTO(
         @NotNull(message = "{SubscribeTeamRequestDTO.idTeam.NotNull}")
-        UUID idTeam,
+        UUID teamId,
         @NotNull(message = "{SubscribeTeamRequestDTO.idHackathon.NotNull}")
-        UUID idHackathon
+        UUID hackathonId
 ) {
 }

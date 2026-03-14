@@ -1,5 +1,6 @@
 package com.github.ArghgrA.Hackhub.model.hackathon.state;
 import com.github.ArghgrA.Hackhub.model.hackathon.AbstractHackathon;
+import com.github.ArghgrA.Hackhub.model.team.AbstractTeam;
 import lombok.Getter;
 
 @Getter
@@ -14,5 +15,9 @@ public class FinishedState implements HackathonState {
     @Override
     public String getName() {
         return "FINISHED";
+    }
+
+    public void setTeamWinner(AbstractHackathon h,AbstractTeam t) {
+        throw new IllegalStateException(String.format("Cannot Set team winner in state %s",this.getName()));
     }
 }

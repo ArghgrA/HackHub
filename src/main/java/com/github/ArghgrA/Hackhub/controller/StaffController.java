@@ -41,8 +41,7 @@ public class StaffController {
 
     @GetMapping("/ticket/get")
     public ResponseEntity<List<TicketDTO>> geTickets(
-            //@RequestParam GetTicketRequestDTO dto
-            @RequestParam UUID hackathonId
+            @Valid @RequestParam UUID hackathonId
     ) {
         GetTicketRequestDTO dto = new GetTicketRequestDTO(hackathonId);
         List<TicketDTO> response = staffHandler.getTicket(dto);
@@ -50,7 +49,32 @@ public class StaffController {
     }
 
     @PostMapping("/ticket/close")
-    public void closeTicket(@RequestBody CloseTicketRequestDTO dto) {
+    public void closeTicket(@Valid @RequestBody CloseTicketRequestDTO dto) {
         staffHandler.closeTicket(dto);
     }
+
+    @GetMapping("/evaluation/get")
+    public ResponseEntity<List<EvaluationDTO>> getEvaluations(
+            @Valid @RequestParam UUID hackathonId
+    ) {
+        GetEvaluationRequestDTO dto = new GetEvaluationRequestDTO(hackathonId);
+        List<EvaluationDTO> response = staffHandler.getEvaluation(dto);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @GetMapping("/report/get")
+    public ResponseEntity<List<ReportDTO>> getReport(
+            @Valid @RequestParam UUID hackathonId
+    ) {
+        GetReportRequestDTO dto = new GetReportRequestDTO(hackathonId);
+        List<ReportDTO> response = staffHandler.getReport(dto);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @PostMapping("/proclaim")
+    public void proclaimTeam(@Valid @RequestBody ProclaimTeamRequestDTO dto){
+        staffHandler.proclaimTeam(dto);
+    }
+
+
 }

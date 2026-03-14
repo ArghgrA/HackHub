@@ -95,7 +95,7 @@ public class TeamHandler {
     public void subscribeTeam(SubscribeTeamRequestDTO dto){
         // retrieve hackathon from db
         DefaultHackathon hackathon = hackathonRepository
-                        .findById(dto.idHackathon())
+                        .findById(dto.hackathonId())
                         .orElseThrow(() -> new EntityNotFoundException("No Hackathon with that id"));
 
         // check if hackathon accept registration
@@ -105,7 +105,7 @@ public class TeamHandler {
 
         // retrieve team from db
         DefaultTeam team = teamRepository
-                .findById(dto.idTeam())
+                .findById(dto.teamId())
                 .orElseThrow(() -> new EntityNotFoundException("No Team with that id"));
 
         // check if team is already participating in the hackathon

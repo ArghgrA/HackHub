@@ -7,6 +7,7 @@ import com.github.ArghgrA.Hackhub.dto.model.StaffDTO;
 import com.github.ArghgrA.Hackhub.dto.model.TicketDTO;
 import com.github.ArghgrA.Hackhub.dto.request.*;
 import com.github.ArghgrA.Hackhub.exception.EntityNotFoundException;
+import com.github.ArghgrA.Hackhub.exception.PaymentException;
 import com.github.ArghgrA.Hackhub.model.hackathon.DefaultHackathon;
 import com.github.ArghgrA.Hackhub.model.hackathon.state.util.HackathonStateKind;
 import com.github.ArghgrA.Hackhub.model.other.message.DefaultReport;
@@ -15,6 +16,9 @@ import com.github.ArghgrA.Hackhub.model.other.message.ticket.DefaultTicket;
 import com.github.ArghgrA.Hackhub.model.other.message.evaluation.DefaultEvaluation;
 import com.github.ArghgrA.Hackhub.model.other.message.evaluation.Score;
 import com.github.ArghgrA.Hackhub.model.other.message.ticket.TicketStateKind;
+import com.github.ArghgrA.Hackhub.model.other.payment.address.AbstractPaymentAddress;
+import com.github.ArghgrA.Hackhub.model.other.payment.address.PaymentAddress;
+import com.github.ArghgrA.Hackhub.model.other.payment.strategy.PaymentStrategy;
 import com.github.ArghgrA.Hackhub.model.team.DefaultTeam;
 import com.github.ArghgrA.Hackhub.model.user.DefaultUser;
 import com.github.ArghgrA.Hackhub.model.user.staff.AbstractStaff;
@@ -24,7 +28,9 @@ import com.github.ArghgrA.Hackhub.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -37,6 +43,7 @@ public class StaffHandler {
     private final EvaluationRepository<DefaultEvaluation> evaluationRepository;
     private final SubmissionRepository<DefaultSubmission> submissionRepository;
     private final TicketRepository<DefaultTicket> ticketRepository;
+    private PaymentStrategy paymentStrategy;
 
     private final StaffMapper staffMapper;
     private final ReportMapper reportMapper;
@@ -139,5 +146,57 @@ public class StaffHandler {
 
         return ticketMapper
                 .toDTOList(ticketRepository.findByHackathon(hackathon.getId()));
+    }
+
+    public List<EvaluationDTO> getEvaluation(GetEvaluationRequestDTO dto){
+        DefaultHackathon hackathon= hackathonRepository
+                .findById(dto.hackathonId())
+                .orElseThrow(() -> new EntityNotFoundException("No Hackathon with that id"));
+
+        return evaluationMapper
+                .toDTOList(evaluationRepository.findByHackathon(hackathon.getId()));
+    }
+
+    public List<ReportDTO> getReport(GetReportRequestDTO dto){
+        DefaultHackathon hackathon= hackathonRepository
+                .findById(dto.hackathonId())
+                .orElseThrow(() -> new EntityNotFoundException("No Hackathon with that id"));
+
+        return reportMapper
+                .toDTOList(reportRepository.findByHackathon(hackathon.getId()));
+    }
+
+    public void proclaimTeam(ProclaimTeamRequestDTO dto){
+        DefaultTeam team = teamRepository
+                .findById(dto.teamId())
+                .orElseThrow(() -> new EntityNotFoundException("No Team with that id"));
+
+        DefaultHackathon hackathon= hackathonRepository
+                .findById(dto.hackathonId())
+                .orElseThrow(() -> new EntityNotFoundException("No Hackathon with that id"));
+
+        if (hackathon.getState() != HackathonStateKind.PROCLAMATION.getInstance()) {
+            throw new IllegalStateException("Hackathon still accepts new evaluation");
+        }
+
+        Optional<AbstractPaymentAddress> paymentAddress = team.findAddressByKind(dto.kind());
+
+        if(!paymentAddress.isPresent()){
+            throw new PaymentException("No Payment Address found");
+        }
+
+        BigDecimal price = hackathon.getPrice();
+
+        paymentStrategy = dto.kind().getStrategyInstance();
+
+        if(!paymentStrategy.process(paymentAddress.get(),price)){
+            throw new PaymentException("Payment Failed");
+        }
+
+        hackathon.setTeamWinner(team);
+
+        hackathon.updateState();
+
+        hackathonRepository.save(hackathon);
     }
 }
