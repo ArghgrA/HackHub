@@ -1,17 +1,16 @@
 package com.github.ArghgrA.Hackhub.handler;
 
 import com.github.ArghgrA.Hackhub.dto.mapper.*;
-import com.github.ArghgrA.Hackhub.dto.model.EvaluationDTO;
-import com.github.ArghgrA.Hackhub.dto.model.ReportDTO;
-import com.github.ArghgrA.Hackhub.dto.model.StaffDTO;
-import com.github.ArghgrA.Hackhub.dto.model.TicketDTO;
+import com.github.ArghgrA.Hackhub.dto.model.*;
 import com.github.ArghgrA.Hackhub.dto.request.*;
 import com.github.ArghgrA.Hackhub.exception.EntityNotFoundException;
+import com.github.ArghgrA.Hackhub.exception.IllegalDateException;
 import com.github.ArghgrA.Hackhub.exception.PaymentException;
 import com.github.ArghgrA.Hackhub.model.hackathon.DefaultHackathon;
 import com.github.ArghgrA.Hackhub.model.hackathon.state.util.HackathonStateKind;
 import com.github.ArghgrA.Hackhub.model.other.message.DefaultReport;
 import com.github.ArghgrA.Hackhub.model.other.message.DefaultSubmission;
+import com.github.ArghgrA.Hackhub.model.other.message.call.DefaultCall;
 import com.github.ArghgrA.Hackhub.model.other.message.ticket.DefaultTicket;
 import com.github.ArghgrA.Hackhub.model.other.message.evaluation.DefaultEvaluation;
 import com.github.ArghgrA.Hackhub.model.other.message.evaluation.Score;
@@ -28,12 +27,14 @@ import com.github.ArghgrA.Hackhub.model.user.staff.Mentor;
 import com.github.ArghgrA.Hackhub.model.user.staff.Organizer;
 import com.github.ArghgrA.Hackhub.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.antlr.v4.runtime.misc.Interval;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -46,11 +47,13 @@ public class StaffHandler {
     private final EvaluationRepository<DefaultEvaluation> evaluationRepository;
     private final SubmissionRepository<DefaultSubmission> submissionRepository;
     private final TicketRepository<DefaultTicket> ticketRepository;
+    private final CallRepository<DefaultCall> callRepository;
 
     private final StaffMapper staffMapper;
     private final ReportMapper reportMapper;
     private final EvaluationMapper evaluationMapper;
     private final TicketMapper ticketMapper;
+    private final CallMapper callMapper;
 
     private PaymentStrategy strategy;
 
@@ -242,5 +245,45 @@ public class StaffHandler {
 
         // Update to finished state
         hackathon.updateState();
+    }
+
+    public CallDTO createCall(AddCallRequestDTO dto) {
+        // retrieve ticket from db
+        DefaultTicket ticket = ticketRepository
+                .findById(dto.ticketId())
+                .orElseThrow(() -> new EntityNotFoundException("Ticket not found"));
+
+        // retrieve mentor from db
+        Mentor mentor = (Mentor) staffRepository
+                .findById(dto.mentorId())
+                .orElseThrow(() -> new EntityNotFoundException("No Mentor with that id"));
+
+        // retrieve hackathon from db
+        DefaultHackathon hackathon= hackathonRepository
+                .findById(dto.hackathonId())
+                .orElseThrow(() -> new EntityNotFoundException("No Hackathon with that id"));
+
+        // take hackathon interval
+        var interval = hackathon.getInterval();
+
+        // check if message date is within hackathon interval
+        if (!interval.inRange(dto.message())) {
+            throw new IllegalDateException("Date must be within the hackathon period");
+        }
+
+        // create new call
+        DefaultCall call = new DefaultCall();
+        call.setTicket(ticket);
+        call.setMessage(dto.message());
+        call.setSender(mentor);
+        call.setReceiver(ticket.getSender());
+
+        // set ticket state to accepted
+        ticket.setState(TicketStateKind.ACCEPTED);
+
+        // save in db
+        callRepository.save(call);
+
+        return callMapper.toDTO(call);
     }
 }

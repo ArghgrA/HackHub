@@ -5,8 +5,10 @@ import com.github.ArghgrA.Hackhub.model.hackathon.AbstractHackathon;
 import com.github.ArghgrA.Hackhub.model.hackathon.builder.DefaultHackathonBuilder;
 import com.github.ArghgrA.Hackhub.model.other.Interval;
 import com.github.ArghgrA.Hackhub.model.other.message.DefaultSubmission;
+import com.github.ArghgrA.Hackhub.model.other.message.call.DefaultCall;
 import com.github.ArghgrA.Hackhub.model.other.message.evaluation.DefaultEvaluation;
 import com.github.ArghgrA.Hackhub.model.other.message.evaluation.Score;
+import com.github.ArghgrA.Hackhub.model.other.message.ticket.DefaultTicket;
 import com.github.ArghgrA.Hackhub.model.team.AbstractTeam;
 import com.github.ArghgrA.Hackhub.model.team.DefaultTeam;
 import com.github.ArghgrA.Hackhub.model.user.AbstractUser;
@@ -43,6 +45,12 @@ public class CompleteTest {
 
     @Autowired
     EvaluationRepository<DefaultEvaluation> evaluationRepository;
+
+    @Autowired
+    CallRepository<DefaultCall> callRepository;
+
+    @Autowired
+    TicketRepository<DefaultTicket> ticketRepository;
 
     @Test
     @Commit
@@ -138,5 +146,22 @@ public class CompleteTest {
         evaluation.setSubmission(submission);
         evaluation.setMessage(new Score(10, "Ottimo Lavoro"));
         evaluationRepository.save(evaluation);
+
+        //Ticket
+        var ticket = new DefaultTicket();
+        ticket.setSender(team);               // Il team che apre il ticket
+        ticket.setReceiver(h);               // L'hackathon destinatario del ticket
+        ticket.setMessage("Ho bisogno di aiuto con il mio progetto."); // Messaggio del ticket
+        ticketRepository.save(ticket);
+
+        //Call
+        var call = new DefaultCall();
+        call.setSender(m);               // Il mentore che propone la call
+        call.setReceiver(team);          // Il team destinatario
+        call.setMessage(LocalDateTime.now().plusDays(2)); // Data proposta per la call
+        call.setTicket(ticket);            // Associa la call al ticket (se necessario, dipende dalla logica dell'applicazione)
+        call.setCalendarEventId(null); // Se la call è associata a un evento del calendario, altrimenti null
+
+        callRepository.save(call);
     }
 }

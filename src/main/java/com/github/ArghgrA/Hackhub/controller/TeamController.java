@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -56,6 +57,21 @@ public class TeamController {
     @PostMapping("/payment/new")
     public ResponseEntity<PaymentDTO> addPayment(@Valid @RequestBody AddPaymentMethodRequestDTO dto) {
         PaymentDTO response = teamHandler.addPayment(dto);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @GetMapping("/call/get")
+    public ResponseEntity<List<CallDTO>> getReport(
+            @Valid @RequestParam UUID teamId, @Valid @RequestParam UUID hackathonId
+    ) {
+        GetCallRequestDTO dto = new GetCallRequestDTO(teamId, hackathonId);
+        List<CallDTO> response = teamHandler.getCalls(dto);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @PostMapping("/call/accept")
+    public ResponseEntity<CallDTO> acceptCall(@Valid @RequestBody AcceptCallRequestDTO dto) {
+        CallDTO response = teamHandler.acceptCall(dto);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }

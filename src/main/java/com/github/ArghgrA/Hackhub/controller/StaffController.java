@@ -1,9 +1,6 @@
 package com.github.ArghgrA.Hackhub.controller;
 
-import com.github.ArghgrA.Hackhub.dto.model.EvaluationDTO;
-import com.github.ArghgrA.Hackhub.dto.model.ReportDTO;
-import com.github.ArghgrA.Hackhub.dto.model.StaffDTO;
-import com.github.ArghgrA.Hackhub.dto.model.TicketDTO;
+import com.github.ArghgrA.Hackhub.dto.model.*;
 import com.github.ArghgrA.Hackhub.dto.request.*;
 import com.github.ArghgrA.Hackhub.handler.StaffHandler;
 import jakarta.validation.Valid;
@@ -76,5 +73,9 @@ public class StaffController {
         staffHandler.proclaimTeam(dto);
     }
 
-
+    @PostMapping("/call/new")
+    public ResponseEntity<CallDTO> addCall(@Valid @RequestBody AddCallRequestDTO dto) {
+        CallDTO response = staffHandler.createCall(dto);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
 }

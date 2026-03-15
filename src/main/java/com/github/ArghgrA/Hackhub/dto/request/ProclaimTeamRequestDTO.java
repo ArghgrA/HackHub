@@ -6,11 +6,11 @@ import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
 
 public record ProclaimTeamRequestDTO(
-        @NotNull
+        @NotNull(message = "{ProclaimTeamRequestDTO.hackathonId.NotNull}")
         UUID hackathonId,
-        @NotNull
+        @NotNull(message = "{ProclaimTeamRequestDTO.teamId.NotNull}")
         UUID teamId,
-        @NotNull
+        @NotNull(message = "{ProclaimTeamRequestDTO.kind.NotNull}")
         PaymentKind kind
 ) {
 }
