@@ -19,16 +19,19 @@ import com.github.ArghgrA.Hackhub.model.other.message.ticket.TicketStateKind;
 import com.github.ArghgrA.Hackhub.model.other.payment.address.AbstractPaymentAddress;
 import com.github.ArghgrA.Hackhub.model.other.payment.address.PaymentAddress;
 import com.github.ArghgrA.Hackhub.model.other.payment.strategy.PaymentStrategy;
+import com.github.ArghgrA.Hackhub.model.team.AbstractTeam;
 import com.github.ArghgrA.Hackhub.model.team.DefaultTeam;
 import com.github.ArghgrA.Hackhub.model.user.DefaultUser;
 import com.github.ArghgrA.Hackhub.model.user.staff.AbstractStaff;
 import com.github.ArghgrA.Hackhub.model.user.staff.Judge;
 import com.github.ArghgrA.Hackhub.model.user.staff.Mentor;
+import com.github.ArghgrA.Hackhub.model.user.staff.Organizer;
 import com.github.ArghgrA.Hackhub.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -200,25 +203,44 @@ public class StaffHandler {
     }
 
     private void handleFinishedState(DefaultHackathon hackathon, DefaultTeam team) {
+        // Set the winning team
         hackathon.setTeamWinner(team);
 
-        hackathon.setTeamWinner(team);
-        //Remove Organizer
-        hackathon.getOrganizer().setHackathon(null);
-        hackathon.setOrganizer(null);
-        //Remove Judge
-        hackathon.getJudge().setHackathon(null);
-        hackathon.setJudge(null);
-        //Remove Mentor
-        for(Mentor m: hackathon.getMentors()){
-            m.setHackathon(null);
+        // Remove organizer reference
+        Organizer organizer = hackathon.getOrganizer();
+        if (organizer != null) {
+            organizer.setHackathon(null);
+            hackathon.setOrganizer(null);
         }
-        hackathon.setMentors(null);
-        //Remove Team
-        hackathon.getTeams().forEach(t -> t.getHackathons().remove(hackathon));
-        hackathon.setTeams(null);
 
+        // Remove judge reference
+        Judge judge = hackathon.getJudge();
+        if (judge != null) {
+            judge.setHackathon(null);
+            hackathon.setJudge(null);
+        }
 
+        // Remove all mentors
+        if (hackathon.getMentors() != null) {
+            List<Mentor> mentors = new ArrayList<>(hackathon.getMentors());
+            for (Mentor m : mentors) {
+                m.setHackathon(null);
+                hackathon.getMentors().remove(m);
+            }
+        }
+
+        // Remove all teams
+        if (hackathon.getTeams() != null) {
+            List<AbstractTeam> teams = new ArrayList<>(hackathon.getTeams());
+            for (AbstractTeam t : teams) {
+                if (t.getHackathons() != null) {
+                    t.getHackathons().remove(hackathon);
+                }
+                hackathon.getTeams().remove(t);
+            }
+        }
+
+        // Update to finished state
         hackathon.updateState();
     }
 }
