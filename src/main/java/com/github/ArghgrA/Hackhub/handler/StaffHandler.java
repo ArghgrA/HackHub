@@ -43,12 +43,13 @@ public class StaffHandler {
     private final EvaluationRepository<DefaultEvaluation> evaluationRepository;
     private final SubmissionRepository<DefaultSubmission> submissionRepository;
     private final TicketRepository<DefaultTicket> ticketRepository;
-    private PaymentStrategy paymentStrategy;
 
     private final StaffMapper staffMapper;
     private final ReportMapper reportMapper;
     private final EvaluationMapper evaluationMapper;
     private final TicketMapper ticketMapper;
+
+    private PaymentStrategy strategy;
 
     public StaffDTO createStaff(AddStaffRequestDTO dto){
         DefaultUser user = userRepository
@@ -181,22 +182,43 @@ public class StaffHandler {
 
         Optional<AbstractPaymentAddress> paymentAddress = team.findAddressByKind(dto.kind());
 
-        if(!paymentAddress.isPresent()){
+        if(paymentAddress.isEmpty()){
             throw new PaymentException("No Payment Address found");
         }
 
         BigDecimal price = hackathon.getPrice();
 
-        paymentStrategy = dto.kind().getStrategyInstance();
+        strategy = dto.kind().getStrategyInstance();
 
-        if(!paymentStrategy.process(paymentAddress.get(),price)){
+        if(!strategy.process(paymentAddress.get(),price)){
             throw new PaymentException("Payment Failed");
         }
 
-        hackathon.setTeamWinner(team);
-
-        hackathon.updateState();
+        this.handleFinishedState(hackathon, team);
 
         hackathonRepository.save(hackathon);
+    }
+
+    private void handleFinishedState(DefaultHackathon hackathon, DefaultTeam team) {
+        hackathon.setTeamWinner(team);
+
+        hackathon.setTeamWinner(team);
+        //Remove Organizer
+        hackathon.getOrganizer().setHackathon(null);
+        hackathon.setOrganizer(null);
+        //Remove Judge
+        hackathon.getJudge().setHackathon(null);
+        hackathon.setJudge(null);
+        //Remove Mentor
+        for(Mentor m: hackathon.getMentors()){
+            m.setHackathon(null);
+        }
+        hackathon.setMentors(null);
+        //Remove Team
+        hackathon.getTeams().forEach(t -> t.getHackathons().remove(hackathon));
+        hackathon.setTeams(null);
+
+
+        hackathon.updateState();
     }
 }

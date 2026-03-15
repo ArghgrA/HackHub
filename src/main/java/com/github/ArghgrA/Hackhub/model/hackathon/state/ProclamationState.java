@@ -21,22 +21,4 @@ public class ProclamationState implements HackathonState{
     public String getName() {
         return "PROCLAMATION";
     }
-
-    public void setTeamWinner(AbstractHackathon h,AbstractTeam w) {
-        h.teamWinner = w;
-        //Remove Organizer
-        h.getOrganizer().setHackathon(null);
-        h.setOrganizer(null);
-        //Remove Judge
-        h.getJudge().setHackathon(null);
-        h.setJudge(null);
-        //Remove Mentor
-        for(Mentor m: h.getMentors()){
-            m.setHackathon(null);
-        }
-        h.setMentors(null);
-        //Remove Team
-        h.getTeams().forEach(t -> t.getHackathons().remove(h));
-        h.setTeams(null);
-    }
 }

@@ -47,7 +47,7 @@ public abstract class AbstractHackathon implements Hackathon<UUID>/*, HackathonS
     private String position;
 
     @OneToOne @JoinColumn(name = "winner_id")
-    public AbstractTeam teamWinner;
+    private AbstractTeam teamWinner;
 
     @ManyToMany
     @JoinTable(name = "team_hackathon",
@@ -79,11 +79,6 @@ public abstract class AbstractHackathon implements Hackathon<UUID>/*, HackathonS
             team.addHackathon(this);
         }
     }
-
-    public void setTeamWinner(AbstractTeam t){
-        state.setTeamWinner(this,t);
-    }
-
     public void updateState() {
         state.updateState(this);
     };

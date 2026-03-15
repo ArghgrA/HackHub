@@ -16,8 +16,4 @@ public class FinishedState implements HackathonState {
     public String getName() {
         return "FINISHED";
     }
-
-    public void setTeamWinner(AbstractHackathon h,AbstractTeam t) {
-        throw new IllegalStateException(String.format("Cannot Set team winner in state %s",this.getName()));
-    }
 }
