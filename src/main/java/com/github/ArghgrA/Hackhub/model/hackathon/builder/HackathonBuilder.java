@@ -23,4 +23,5 @@ public interface HackathonBuilder<T extends HackathonBuilder<T>> {
     T setState(HackathonState state);
     T setPrice(BigDecimal price);
     T setPosition(String position);
+    T setTeamWinner(AbstractTeam teamWinner);
 }

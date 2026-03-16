@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -61,5 +62,9 @@ public class Interval {
                     String.format("Field '%s' must have hour precision only (got: %s)", fieldName, date)
             );
         }
+    }
+
+    public boolean inRange(LocalDateTime date) {
+        return !date.isBefore(registrationStart) && !date.isAfter(competitionEnd);
     }
 }

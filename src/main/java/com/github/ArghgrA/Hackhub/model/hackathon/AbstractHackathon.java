@@ -27,11 +27,9 @@ public abstract class AbstractHackathon implements Hackathon<UUID>/*, HackathonS
     @Embedded
     private Interval interval;
 
-    @Setter(AccessLevel.NONE)
     @OneToOne @JoinColumn(name = "organizer_id")
     private Organizer organizer;
 
-    @Setter(AccessLevel.NONE)
     @OneToOne @JoinColumn(name = "judge_id")
     private Judge judge;
 
@@ -47,6 +45,9 @@ public abstract class AbstractHackathon implements Hackathon<UUID>/*, HackathonS
     private BigDecimal price;
 
     private String position;
+
+    @OneToOne @JoinColumn(name = "winner_id")
+    private AbstractTeam teamWinner;
 
     @ManyToMany
     @JoinTable(name = "team_hackathon",
@@ -78,7 +79,6 @@ public abstract class AbstractHackathon implements Hackathon<UUID>/*, HackathonS
             team.addHackathon(this);
         }
     }
-
     public void updateState() {
         state.updateState(this);
     };

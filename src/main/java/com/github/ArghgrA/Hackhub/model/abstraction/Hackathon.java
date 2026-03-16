@@ -1,6 +1,7 @@
 package com.github.ArghgrA.Hackhub.model.abstraction;
 
 import com.github.ArghgrA.Hackhub.model.other.Interval;
+import com.github.ArghgrA.Hackhub.model.team.AbstractTeam;
 import com.github.ArghgrA.Hackhub.model.user.staff.Judge;
 import com.github.ArghgrA.Hackhub.model.user.staff.Mentor;
 import com.github.ArghgrA.Hackhub.model.user.staff.Organizer;
@@ -19,4 +20,5 @@ public interface Hackathon<I extends Comparable<I>> {
     List<Mentor> getMentors();
     BigDecimal getPrice();
     String getPosition();
+    AbstractTeam getTeamWinner();
 }

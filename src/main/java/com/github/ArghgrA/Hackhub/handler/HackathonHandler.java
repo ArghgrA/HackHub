@@ -8,6 +8,7 @@ import com.github.ArghgrA.Hackhub.dto.request.AddMentorToHackathonRequestDTO;
 import com.github.ArghgrA.Hackhub.dto.request.CreateHackathonRequestDTO;
 import com.github.ArghgrA.Hackhub.exception.AlreadyExistingException;
 import com.github.ArghgrA.Hackhub.exception.EntityNotFoundException;
+import com.github.ArghgrA.Hackhub.model.hackathon.AbstractHackathon;
 import com.github.ArghgrA.Hackhub.model.hackathon.DefaultHackathon;
 import com.github.ArghgrA.Hackhub.model.hackathon.builder.DefaultHackathonBuilder;
 import com.github.ArghgrA.Hackhub.model.hackathon.state.InactiveState;
@@ -96,9 +97,19 @@ public class HackathonHandler {
 
         // add Judge to Hackathon and persist in db
         hackathon.addStaff(judge);
+        // if hackathon has already a mentor and a Judge, update state to REGISTRATION
+        this.handleRegistrationState(hackathon);
         hackathonRepository.save(hackathon);
 
         return staffMapper.toDTO(judge);
+    }
+
+    private void handleRegistrationState(AbstractHackathon hackathon){
+        if(hackathon.getState() == HackathonStateKind.INACTIVE.getInstance()
+                && !hackathon.getMentors().isEmpty()
+                && hackathon.getJudge() != null ){
+            hackathon.updateState();
+        }
     }
 
     public StaffDTO addMentor(AddMentorToHackathonRequestDTO dto) {
@@ -124,6 +135,8 @@ public class HackathonHandler {
 
         // add Mentor to Hackathon and persist in db
         hackathon.addStaff(mentor);
+        // if hackathon has already a mentor and a Judge, update state to REGISTRATION
+        this.handleRegistrationState(hackathon);
         hackathonRepository.save(hackathon);
 
         return staffMapper.toDTO(mentor);

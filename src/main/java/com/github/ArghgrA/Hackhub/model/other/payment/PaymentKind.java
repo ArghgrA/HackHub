@@ -33,4 +33,10 @@ public enum PaymentKind {
             case BitcoinStrategy s -> address instanceof BitcoinAddress;
         };
     }
+    public boolean matches(PaymentAddress address) {
+        return switch (this) {
+            case CARD -> address instanceof CardAddress;
+            case BITCOIN -> address instanceof BitcoinAddress;
+        };
+    }
 }

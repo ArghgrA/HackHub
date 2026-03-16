@@ -10,14 +10,13 @@ public enum HackathonStateKind {
     REGISTRATION(RegistrationState.INSTANCE),
     COMPETITION(CompetitionState.INSTANCE),
     EVALUATION(EvaluationState.INSTANCE),
+    PROCLAMATION(ProclamationState.INSTANCE),
     FINISHED(FinishedState.INSTANCE);
 
     private final HackathonState instance;
 
     public static HackathonStateKind fromState(HackathonState state) {
         for (HackathonStateKind e : values()) {
-            //if (e.instance == state) return e;
-            //if(e.instance.equals(state)) return e;
             if (e.instance.getClass().equals(state.getClass())) return e;
         }
 

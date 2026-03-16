@@ -7,8 +7,10 @@ import com.github.ArghgrA.Hackhub.exception.AlreadyExistingException;
 import com.github.ArghgrA.Hackhub.exception.EntityNotFoundException;
 import com.github.ArghgrA.Hackhub.model.hackathon.DefaultHackathon;
 import com.github.ArghgrA.Hackhub.model.hackathon.state.util.HackathonStateKind;
+import com.github.ArghgrA.Hackhub.model.other.message.call.DefaultCall;
 import com.github.ArghgrA.Hackhub.model.other.message.DefaultInvite;
 import com.github.ArghgrA.Hackhub.model.other.message.DefaultSubmission;
+import com.github.ArghgrA.Hackhub.model.other.message.call.facade.CalendarFacade;
 import com.github.ArghgrA.Hackhub.model.other.message.ticket.DefaultTicket;
 import com.github.ArghgrA.Hackhub.model.other.payment.address.AbstractPaymentAddress;
 import com.github.ArghgrA.Hackhub.model.team.DefaultTeam;
@@ -20,6 +22,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -33,12 +36,17 @@ public class TeamHandler {
     private final TicketRepository<DefaultTicket> ticketRepository;
     private final SubmissionRepository<DefaultSubmission> submissionRepository;
     private final PaymentRepository<AbstractPaymentAddress> paymentRepository;
+    private final CallRepository<DefaultCall> callRepository;
 
     private final TeamMapper teamMapper;
     private final TicketMapper ticketMapper;
     private final SubmissionMapper submissionMapper;
     private final InviteMapper inviteMapper;
     private final PaymentMapper paymentMapper;
+    private final CallMapper callMapper;
+
+    // add CalendarFacade Singleton
+    private final CalendarFacade calendar = CalendarFacade.getINSTANCE();
 
     public TeamDTO createTeam(CreateTeamRequestDTO dto) {
         // create new Team with given info
@@ -95,7 +103,7 @@ public class TeamHandler {
     public void subscribeTeam(SubscribeTeamRequestDTO dto){
         // retrieve hackathon from db
         DefaultHackathon hackathon = hackathonRepository
-                        .findById(dto.idHackathon())
+                        .findById(dto.hackathonId())
                         .orElseThrow(() -> new EntityNotFoundException("No Hackathon with that id"));
 
         // check if hackathon accept registration
@@ -105,7 +113,7 @@ public class TeamHandler {
 
         // retrieve team from db
         DefaultTeam team = teamRepository
-                .findById(dto.idTeam())
+                .findById(dto.teamId())
                 .orElseThrow(() -> new EntityNotFoundException("No Team with that id"));
 
         // check if team is already participating in the hackathon
@@ -214,5 +222,41 @@ public class TeamHandler {
         team.addPaymentAddress(payment);
 
         return paymentMapper.toDTO(payment);
+    }
+
+    // In TeamHandler.java
+    public List<CallDTO> getCalls(GetCallRequestDTO dto) {
+        // Retrieve team from the database
+        DefaultTeam team = teamRepository
+                .findById(dto.teamId())
+                .orElseThrow(() -> new EntityNotFoundException("No Team with that id"));
+
+        // Retrieve hackathon from the database
+        DefaultHackathon hackathon = hackathonRepository
+                .findById(dto.hackathonId())
+                .orElseThrow(() -> new EntityNotFoundException("No Hackathon with that id"));
+
+        // Retrieve calls associated with the team and hackathon
+        List<DefaultCall> calls = callRepository.findByTeamAndHackathon(team.getId(), hackathon.getId());
+
+        // Map the calls to CallDTO
+        return callMapper.toDTOList(calls);
+    }
+
+    public CallDTO acceptCall(AcceptCallRequestDTO dto) {
+        // Retrieve call from the database
+        DefaultCall call = callRepository.findById(dto.callId())
+                .orElseThrow(() -> new EntityNotFoundException("No Call with id: " + dto.callId()));
+
+        // Check if the call is already accepted
+        if (call.getCalendarEventId() != null) {
+            throw new IllegalStateException("Call has already been accepted");
+        }
+
+        // Accept the call and create a calendar event
+        String eventId = calendar.acceptCall(call);
+        call.setCalendarEventId(eventId);
+        callRepository.save(call);
+        return callMapper.toDTO(call);
     }
 }

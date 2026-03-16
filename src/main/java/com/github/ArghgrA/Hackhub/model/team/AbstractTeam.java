@@ -2,7 +2,9 @@ package com.github.ArghgrA.Hackhub.model.team;
 
 import com.github.ArghgrA.Hackhub.model.abstraction.Team;
 import com.github.ArghgrA.Hackhub.model.hackathon.AbstractHackathon;
+import com.github.ArghgrA.Hackhub.model.other.payment.PaymentKind;
 import com.github.ArghgrA.Hackhub.model.other.payment.address.AbstractPaymentAddress;
+import com.github.ArghgrA.Hackhub.model.other.payment.address.PaymentAddress;
 import com.github.ArghgrA.Hackhub.model.user.TeamMember;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -66,4 +68,11 @@ public abstract class AbstractTeam implements Team<UUID> {
                 .map(type::cast)
                 .findFirst();
     }
+
+    public Optional<AbstractPaymentAddress> findAddressByKind(PaymentKind kind){
+            return addresses.stream()
+                    .filter(kind::matches)
+                    .findFirst();
+    }
+
 }

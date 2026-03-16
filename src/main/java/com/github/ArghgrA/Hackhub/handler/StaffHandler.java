@@ -1,30 +1,40 @@
 package com.github.ArghgrA.Hackhub.handler;
 
 import com.github.ArghgrA.Hackhub.dto.mapper.*;
-import com.github.ArghgrA.Hackhub.dto.model.EvaluationDTO;
-import com.github.ArghgrA.Hackhub.dto.model.ReportDTO;
-import com.github.ArghgrA.Hackhub.dto.model.StaffDTO;
-import com.github.ArghgrA.Hackhub.dto.model.TicketDTO;
+import com.github.ArghgrA.Hackhub.dto.model.*;
 import com.github.ArghgrA.Hackhub.dto.request.*;
 import com.github.ArghgrA.Hackhub.exception.EntityNotFoundException;
+import com.github.ArghgrA.Hackhub.exception.IllegalDateException;
+import com.github.ArghgrA.Hackhub.exception.PaymentException;
 import com.github.ArghgrA.Hackhub.model.hackathon.DefaultHackathon;
 import com.github.ArghgrA.Hackhub.model.hackathon.state.util.HackathonStateKind;
 import com.github.ArghgrA.Hackhub.model.other.message.DefaultReport;
 import com.github.ArghgrA.Hackhub.model.other.message.DefaultSubmission;
+import com.github.ArghgrA.Hackhub.model.other.message.call.DefaultCall;
 import com.github.ArghgrA.Hackhub.model.other.message.ticket.DefaultTicket;
 import com.github.ArghgrA.Hackhub.model.other.message.evaluation.DefaultEvaluation;
 import com.github.ArghgrA.Hackhub.model.other.message.evaluation.Score;
 import com.github.ArghgrA.Hackhub.model.other.message.ticket.TicketStateKind;
+import com.github.ArghgrA.Hackhub.model.other.payment.address.AbstractPaymentAddress;
+import com.github.ArghgrA.Hackhub.model.other.payment.address.PaymentAddress;
+import com.github.ArghgrA.Hackhub.model.other.payment.strategy.PaymentStrategy;
+import com.github.ArghgrA.Hackhub.model.team.AbstractTeam;
 import com.github.ArghgrA.Hackhub.model.team.DefaultTeam;
 import com.github.ArghgrA.Hackhub.model.user.DefaultUser;
 import com.github.ArghgrA.Hackhub.model.user.staff.AbstractStaff;
 import com.github.ArghgrA.Hackhub.model.user.staff.Judge;
 import com.github.ArghgrA.Hackhub.model.user.staff.Mentor;
+import com.github.ArghgrA.Hackhub.model.user.staff.Organizer;
 import com.github.ArghgrA.Hackhub.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.antlr.v4.runtime.misc.Interval;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -37,11 +47,15 @@ public class StaffHandler {
     private final EvaluationRepository<DefaultEvaluation> evaluationRepository;
     private final SubmissionRepository<DefaultSubmission> submissionRepository;
     private final TicketRepository<DefaultTicket> ticketRepository;
+    private final CallRepository<DefaultCall> callRepository;
 
     private final StaffMapper staffMapper;
     private final ReportMapper reportMapper;
     private final EvaluationMapper evaluationMapper;
     private final TicketMapper ticketMapper;
+    private final CallMapper callMapper;
+
+    private PaymentStrategy strategy;
 
     public StaffDTO createStaff(AddStaffRequestDTO dto){
         DefaultUser user = userRepository
@@ -139,5 +153,154 @@ public class StaffHandler {
 
         return ticketMapper
                 .toDTOList(ticketRepository.findByHackathon(hackathon.getId()));
+    }
+
+    public List<EvaluationDTO> getEvaluation(GetEvaluationRequestDTO dto){
+        DefaultHackathon hackathon= hackathonRepository
+                .findById(dto.hackathonId())
+                .orElseThrow(() -> new EntityNotFoundException("No Hackathon with that id"));
+
+        return evaluationMapper
+                .toDTOList(evaluationRepository.findByHackathon(hackathon.getId()));
+    }
+
+    public void endEvaluation(EndEvaluationRequestDTO dto) {
+        DefaultHackathon hackathon = hackathonRepository
+                .findById(dto.hackathonId())
+                .orElseThrow(() -> new EntityNotFoundException("No Hackathon with that id"));
+
+        if(hackathon.getState()!=HackathonStateKind.EVALUATION.getInstance()) {
+            throw new IllegalStateException(String.format("cannot end evaluation in %s state", hackathon.getState().getName()));
+        }
+
+        if(!evaluationRepository.allSubmissionsEvaluated(hackathon.getId())) {
+            throw new IllegalStateException("missing evaluations for submissions");
+        }
+
+        hackathon.updateState();
+        hackathonRepository.save(hackathon);
+    }
+
+    public List<ReportDTO> getReport(GetReportRequestDTO dto){
+        DefaultHackathon hackathon= hackathonRepository
+                .findById(dto.hackathonId())
+                .orElseThrow(() -> new EntityNotFoundException("No Hackathon with that id"));
+
+        return reportMapper
+                .toDTOList(reportRepository.findByHackathon(hackathon.getId()));
+    }
+
+    public void proclaimTeam(ProclaimTeamRequestDTO dto){
+        DefaultTeam team = teamRepository
+                .findById(dto.teamId())
+                .orElseThrow(() -> new EntityNotFoundException("No Team with that id"));
+
+        DefaultHackathon hackathon= hackathonRepository
+                .findById(dto.hackathonId())
+                .orElseThrow(() -> new EntityNotFoundException("No Hackathon with that id"));
+
+        if (hackathon.getState() != HackathonStateKind.PROCLAMATION.getInstance()) {
+            throw new IllegalStateException("Hackathon still accepts new evaluation");
+        }
+
+        Optional<AbstractPaymentAddress> paymentAddress = team.findAddressByKind(dto.kind());
+
+        if(paymentAddress.isEmpty()){
+            throw new PaymentException("No Payment Address found");
+        }
+
+        BigDecimal price = hackathon.getPrice();
+
+        strategy = dto.kind().getStrategyInstance();
+
+        if(!strategy.process(paymentAddress.get(),price)){
+            throw new PaymentException("Payment Failed");
+        }
+
+        this.handleFinishedState(hackathon, team);
+
+        hackathonRepository.save(hackathon);
+    }
+
+    private void handleFinishedState(DefaultHackathon hackathon, DefaultTeam team) {
+        // Set the winning team
+        hackathon.setTeamWinner(team);
+
+        // Remove organizer reference
+        Organizer organizer = hackathon.getOrganizer();
+        if (organizer != null) {
+            organizer.setHackathon(null);
+            hackathon.setOrganizer(null);
+        }
+
+        // Remove judge reference
+        Judge judge = hackathon.getJudge();
+        if (judge != null) {
+            judge.setHackathon(null);
+            hackathon.setJudge(null);
+        }
+
+        // Remove all mentors
+        if (hackathon.getMentors() != null) {
+            List<Mentor> mentors = new ArrayList<>(hackathon.getMentors());
+            for (Mentor m : mentors) {
+                m.setHackathon(null);
+                hackathon.getMentors().remove(m);
+            }
+        }
+
+        // Remove all teams
+        if (hackathon.getTeams() != null) {
+            List<AbstractTeam> teams = new ArrayList<>(hackathon.getTeams());
+            for (AbstractTeam t : teams) {
+                if (t.getHackathons() != null) {
+                    t.getHackathons().remove(hackathon);
+                }
+                hackathon.getTeams().remove(t);
+            }
+        }
+
+        // Update to finished state
+        hackathon.updateState();
+    }
+
+    public CallDTO createCall(AddCallRequestDTO dto) {
+        // retrieve ticket from db
+        DefaultTicket ticket = ticketRepository
+                .findById(dto.ticketId())
+                .orElseThrow(() -> new EntityNotFoundException("Ticket not found"));
+
+        // retrieve mentor from db
+        Mentor mentor = (Mentor) staffRepository
+                .findById(dto.mentorId())
+                .orElseThrow(() -> new EntityNotFoundException("No Mentor with that id"));
+
+        // retrieve hackathon from db
+        DefaultHackathon hackathon= hackathonRepository
+                .findById(dto.hackathonId())
+                .orElseThrow(() -> new EntityNotFoundException("No Hackathon with that id"));
+
+        // take hackathon interval
+        var interval = hackathon.getInterval();
+
+        // check if message date is within hackathon interval
+        if (!interval.inRange(dto.message())) {
+            throw new IllegalDateException("Date must be within the hackathon period");
+        }
+
+        // create new call
+        DefaultCall call = new DefaultCall();
+        call.setTicket(ticket);
+        call.setMessage(dto.message());
+        call.setSender(mentor);
+        call.setReceiver(ticket.getSender());
+
+        // set ticket state to accepted
+        ticket.setState(TicketStateKind.ACCEPTED);
+
+        // save in db
+        callRepository.save(call);
+
+        return callMapper.toDTO(call);
     }
 }

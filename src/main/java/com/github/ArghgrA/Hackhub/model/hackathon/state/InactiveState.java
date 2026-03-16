@@ -2,6 +2,7 @@ package com.github.ArghgrA.Hackhub.model.hackathon.state;
 
 import com.github.ArghgrA.Hackhub.model.hackathon.AbstractHackathon;
 import com.github.ArghgrA.Hackhub.model.hackathon.state.util.HackathonStateKind;
+import com.github.ArghgrA.Hackhub.model.team.AbstractTeam;
 import lombok.Getter;
 
 @Getter
@@ -17,6 +18,4 @@ public class InactiveState implements HackathonState{
     public String getName() {
         return "INACTIVE";
     }
-
-    ;
 }
