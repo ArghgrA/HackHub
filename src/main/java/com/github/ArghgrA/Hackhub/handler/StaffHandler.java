@@ -164,6 +164,23 @@ public class StaffHandler {
                 .toDTOList(evaluationRepository.findByHackathon(hackathon.getId()));
     }
 
+    public void endEvaluation(EndEvaluationRequestDTO dto) {
+        DefaultHackathon hackathon = hackathonRepository
+                .findById(dto.hackathonId())
+                .orElseThrow(() -> new EntityNotFoundException("No Hackathon with that id"));
+
+        if(hackathon.getState()!=HackathonStateKind.EVALUATION.getInstance()) {
+            throw new IllegalStateException(String.format("cannot end evaluation in %s state", hackathon.getState().getName()));
+        }
+
+        if(!evaluationRepository.allSubmissionsEvaluated(hackathon.getId())) {
+            throw new IllegalStateException("missing evaluations for submissions");
+        }
+
+        hackathon.updateState();
+        hackathonRepository.save(hackathon);
+    }
+
     public List<ReportDTO> getReport(GetReportRequestDTO dto){
         DefaultHackathon hackathon= hackathonRepository
                 .findById(dto.hackathonId())

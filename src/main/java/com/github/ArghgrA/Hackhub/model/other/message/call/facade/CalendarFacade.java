@@ -11,7 +11,7 @@ public class CalendarFacade {
     @Getter
     private static final CalendarFacade INSTANCE = new CalendarFacade();
 
-    public static String acceptCall(DefaultCall call) {
+    public String acceptCall(DefaultCall call) {
         if (calendarService == null) {
             throw new IllegalStateException("CalendarService not initialized");
         }
@@ -21,5 +21,4 @@ public class CalendarFacade {
         return calendarService.createCalendarEvent(call)
                 .orElseThrow(() -> new IllegalStateException("Failed to create calendar event"));
     }
-
 }

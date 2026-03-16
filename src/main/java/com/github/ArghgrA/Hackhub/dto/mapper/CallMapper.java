@@ -11,6 +11,8 @@ import java.util.List;
 public interface CallMapper {
         @Mapping(source = "sender.id", target = "mentorId")
         @Mapping(source = "receiver.id", target = "teamId")
+        @Mapping(source = "message", target = "date")
+        @Mapping(source = "ticket.id", target = "ticketId")
         CallDTO toDTO(DefaultCall call);
         List<CallDTO> toDTOList(List<DefaultCall> calls);
 }

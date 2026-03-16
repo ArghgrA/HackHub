@@ -45,6 +45,9 @@ public class TeamHandler {
     private final PaymentMapper paymentMapper;
     private final CallMapper callMapper;
 
+    // add CalendarFacade Singleton
+    private final CalendarFacade calendar = CalendarFacade.getINSTANCE();
+
     public TeamDTO createTeam(CreateTeamRequestDTO dto) {
         // create new Team with given info
         DefaultTeam newTeam = new DefaultTeam();
@@ -251,7 +254,7 @@ public class TeamHandler {
         }
 
         // Accept the call and create a calendar event
-        String eventId = CalendarFacade.acceptCall(call);
+        String eventId = calendar.acceptCall(call);
         call.setCalendarEventId(eventId);
         callRepository.save(call);
         return callMapper.toDTO(call);

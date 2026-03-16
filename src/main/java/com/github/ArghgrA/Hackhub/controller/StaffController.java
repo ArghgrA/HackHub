@@ -59,6 +59,12 @@ public class StaffController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+
+    @PostMapping("/evaluation/end")
+    public void endEvaluation(@Valid @RequestBody EndEvaluationRequestDTO dto) {
+        staffHandler.endEvaluation(dto);
+    }
+
     @GetMapping("/report/get")
     public ResponseEntity<List<ReportDTO>> getReport(
             @Valid @RequestParam UUID hackathonId

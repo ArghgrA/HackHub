@@ -14,4 +14,19 @@ public interface EvaluationRepository<T extends DefaultEvaluation> extends JpaRe
 
     @Query("SELECT s FROM DefaultEvaluation s WHERE s.receiver.id = ?1")
     List<T> findByHackathon(UUID hackathon_id);
+
+    @Query("""
+    SELECT CASE
+        WHEN (SELECT COUNT(s) FROM DefaultSubmission s WHERE s.receiver.id = ?1) > 0
+             AND
+             (SELECT COUNT(s) FROM DefaultSubmission s WHERE s.receiver.id = ?1)
+             =
+             (SELECT COUNT(e) FROM DefaultEvaluation e WHERE e.receiver.id = ?1)
+        THEN true
+        ELSE false
+    END
+    FROM DefaultSubmission s
+    WHERE s.receiver.id = ?1
+    """)
+    Boolean allSubmissionsEvaluated(UUID hackathon_id);
 }

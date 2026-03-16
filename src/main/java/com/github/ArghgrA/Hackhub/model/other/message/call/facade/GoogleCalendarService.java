@@ -5,6 +5,7 @@ import com.github.ArghgrA.Hackhub.model.other.message.call.DefaultCall;
 import java.util.Optional;
 import java.util.UUID;
 
+// TODO: implement GoogleCalendar bindings
 public class GoogleCalendarService implements CalendarService{
     @Override
     public boolean isAvailable() {
