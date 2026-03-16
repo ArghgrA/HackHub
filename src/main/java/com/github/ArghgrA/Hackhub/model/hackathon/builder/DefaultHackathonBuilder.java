@@ -75,6 +75,11 @@ public class DefaultHackathonBuilder implements HackathonBuilder<DefaultHackatho
         return this;
     }
 
+    public DefaultHackathonBuilder setTeamWinner(AbstractTeam teamWinner){
+        hackathon.setTeamWinner(teamWinner);
+        return this;
+    }
+
     public DefaultHackathon getResult() {
         DefaultHackathon tmp = hackathon;
 
