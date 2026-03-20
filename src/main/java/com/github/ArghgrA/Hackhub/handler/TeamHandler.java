@@ -94,9 +94,11 @@ public class TeamHandler {
         newInvite.setSender(team);
         newInvite.setMessage(request.message());
 
+        // add invite to user list
+        user.addInvite(newInvite);
+
         // persist in db
         inviteRepository.save(newInvite);
-
         return inviteMapper.toDto(newInvite);
     }
 
@@ -149,7 +151,7 @@ public class TeamHandler {
         //nell'if non va messo || ma &&
         if(hackathon.getState() != HackathonStateKind.REGISTRATION.getInstance() &&
            hackathon.getState() != HackathonStateKind.COMPETITION.getInstance() ) {
-            throw new IllegalStateException(String.format("cannot open new ticket in %s state",hackathon.getState().toString()));
+            throw new IllegalStateException(String.format("cannot open new ticket in %s state",hackathon.getState().getName()));
         }
 
         // create new ticket
@@ -246,7 +248,7 @@ public class TeamHandler {
     public CallDTO acceptCall(AcceptCallRequestDTO dto) {
         // Retrieve call from the database
         DefaultCall call = callRepository.findById(dto.callId())
-                .orElseThrow(() -> new EntityNotFoundException("No Call with id: " + dto.callId()));
+                .orElseThrow(() -> new EntityNotFoundException("No Call with that id"));
 
         // Check if the call is already accepted
         if (call.getCalendarEventId() != null) {
@@ -258,5 +260,45 @@ public class TeamHandler {
         call.setCalendarEventId(eventId);
         callRepository.save(call);
         return callMapper.toDTO(call);
+    }
+
+    public List<TicketDTO> getTicket(GetTicketRequestTeamDTO dto) {
+        TeamMember teamMember = teamMemberRepository
+                .findById(dto.teamMemberId())
+                .orElseThrow(() -> new EntityNotFoundException("No Member with that id"));
+
+        DefaultTeam team = teamRepository
+                .findById(dto.teamId())
+                .orElseThrow(() -> new EntityNotFoundException("No Team with that id"));
+
+        return ticketMapper
+                .toDTOList(ticketRepository.findByTeam(team.getId()));
+    }
+
+    public void leaveTeam(LeaveTeamRequestDTO dto) {
+        // retrieve team member from db
+        TeamMember teamMember = teamMemberRepository
+                .findById(dto.teamMemberId())
+                .orElseThrow(() -> new EntityNotFoundException("No Team Member with that id"));
+
+        // retrieve team from db
+        DefaultTeam team = teamRepository
+                .findById(dto.teamId())
+                .orElseThrow(() -> new EntityNotFoundException("No Team with that id"));
+
+        // check if the team member is in the team
+        if (!team.getMembers().contains(teamMember)) {
+            throw new IllegalStateException("Team Member is not in the Team");
+        }
+
+        // remove team member from team
+        team.removeMember(teamMember);
+
+        // transform team member in user
+        DefaultUser user = teamMember.transform(DefaultUser.class);
+
+        // persist changes in db
+        teamRepository.save(team);
+        userRepository.delete(user);
     }
 }

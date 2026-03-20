@@ -74,4 +74,17 @@ public class TeamController {
         CallDTO response = teamHandler.acceptCall(dto);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+
+    @GetMapping("/ticket/get")
+    public ResponseEntity<List<TicketDTO>> geTickets(
+            @Valid @RequestParam UUID teamId,
+            @Valid @RequestParam UUID teamMemberId
+    ) {
+        GetTicketRequestTeamDTO dto = new GetTicketRequestTeamDTO(teamId,teamMemberId);
+        List<TicketDTO> response = teamHandler.getTicket(dto);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @PostMapping("/leave")
+    public void leaveTeam(@Valid @RequestBody LeaveTeamRequestDTO dto) {teamHandler.leaveTeam(dto);}
 }

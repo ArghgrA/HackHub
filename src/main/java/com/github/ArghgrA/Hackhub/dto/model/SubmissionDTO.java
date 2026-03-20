@@ -5,6 +5,7 @@ import java.util.UUID;
 public record SubmissionDTO(
         UUID id,
         UUID teamId,
-        UUID hackathonId
+        UUID hackathonId,
+        Byte[] message
 ) {
 }

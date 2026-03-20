@@ -10,6 +10,6 @@ import java.util.UUID;
 
 @Repository
 public interface InviteRepository<T extends DefaultInvite> extends JpaRepository<T, UUID> {
-    @Query("SELECT i FROM DefaultInvite i WHERE i.sender.id = ?1 AND i.receiver.id = ?2")
+    @Query("SELECT i FROM DefaultInvite i WHERE i.receiver.id = ?1 AND i.sender.id = ?2")
     Optional<T> findInviteByTeam(UUID user_id, UUID team_id);
 }

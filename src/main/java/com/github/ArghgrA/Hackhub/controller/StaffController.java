@@ -40,7 +40,7 @@ public class StaffController {
     public ResponseEntity<List<TicketDTO>> geTickets(
             @Valid @RequestParam UUID hackathonId
     ) {
-        GetTicketRequestDTO dto = new GetTicketRequestDTO(hackathonId);
+        GetTicketRequestStaffDTO dto = new GetTicketRequestStaffDTO(hackathonId);
         List<TicketDTO> response = staffHandler.getTicket(dto);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -82,6 +82,15 @@ public class StaffController {
     @PostMapping("/call/new")
     public ResponseEntity<CallDTO> addCall(@Valid @RequestBody AddCallRequestDTO dto) {
         CallDTO response = staffHandler.createCall(dto);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @GetMapping("/submission/get")
+    public ResponseEntity<List<SubmissionDTO>> getSubmission(
+            @Valid @RequestParam UUID hackathonId
+    ) {
+        GetSubmissionRequestDTO dto = new GetSubmissionRequestDTO(hackathonId);
+        List<SubmissionDTO> response = staffHandler.getSubmission(dto);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }

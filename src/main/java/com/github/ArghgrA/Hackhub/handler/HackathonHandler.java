@@ -6,6 +6,7 @@ import com.github.ArghgrA.Hackhub.dto.model.StaffDTO;
 import com.github.ArghgrA.Hackhub.dto.request.AddJudgeToHackathonRequestDTO;
 import com.github.ArghgrA.Hackhub.dto.request.AddMentorToHackathonRequestDTO;
 import com.github.ArghgrA.Hackhub.dto.request.CreateHackathonRequestDTO;
+import com.github.ArghgrA.Hackhub.dto.request.GetHackathonRequestDTO;
 import com.github.ArghgrA.Hackhub.exception.AlreadyExistingException;
 import com.github.ArghgrA.Hackhub.exception.EntityNotFoundException;
 import com.github.ArghgrA.Hackhub.model.hackathon.AbstractHackathon;
@@ -26,6 +27,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -140,6 +142,11 @@ public class HackathonHandler {
         hackathonRepository.save(hackathon);
 
         return staffMapper.toDTO(mentor);
+    }
+
+    public List<HackathonDTO> getHackathon(GetHackathonRequestDTO dto) {
+        return hackathonMapper
+                .toDTOList(hackathonRepository.findAll());
     }
 
     @Transactional
