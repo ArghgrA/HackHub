@@ -16,7 +16,6 @@ import com.github.ArghgrA.Hackhub.model.other.message.evaluation.DefaultEvaluati
 import com.github.ArghgrA.Hackhub.model.other.message.evaluation.Score;
 import com.github.ArghgrA.Hackhub.model.other.message.ticket.TicketStateKind;
 import com.github.ArghgrA.Hackhub.model.other.payment.address.AbstractPaymentAddress;
-import com.github.ArghgrA.Hackhub.model.other.payment.address.PaymentAddress;
 import com.github.ArghgrA.Hackhub.model.other.payment.strategy.PaymentStrategy;
 import com.github.ArghgrA.Hackhub.model.team.AbstractTeam;
 import com.github.ArghgrA.Hackhub.model.team.DefaultTeam;
@@ -27,14 +26,12 @@ import com.github.ArghgrA.Hackhub.model.user.staff.Mentor;
 import com.github.ArghgrA.Hackhub.model.user.staff.Organizer;
 import com.github.ArghgrA.Hackhub.repository.*;
 import lombok.RequiredArgsConstructor;
-import org.antlr.v4.runtime.misc.Interval;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -54,6 +51,7 @@ public class StaffHandler {
     private final EvaluationMapper evaluationMapper;
     private final TicketMapper ticketMapper;
     private final CallMapper callMapper;
+    private final SubmissionMapper submissionMapper;
 
     private PaymentStrategy strategy;
 
@@ -146,7 +144,7 @@ public class StaffHandler {
         ticketRepository.save(ticket);
     }
 
-    public List<TicketDTO> getTicket(GetTicketRequestDTO dto) {
+    public List<TicketDTO> getTicket(GetTicketRequestStaffDTO dto) {
         DefaultHackathon hackathon= hackathonRepository
                 .findById(dto.hackathonId())
                 .orElseThrow(() -> new EntityNotFoundException("No Hackathon with that id"));
@@ -302,5 +300,14 @@ public class StaffHandler {
         callRepository.save(call);
 
         return callMapper.toDTO(call);
+    }
+
+    public List<SubmissionDTO> getSubmission(GetSubmissionRequestDTO dto) {
+        DefaultHackathon hackathon = hackathonRepository
+                .findById(dto.hackathonId())
+                .orElseThrow(() -> new EntityNotFoundException("No Hackathon with that id"));
+
+        return submissionMapper
+                .toDTOList(submissionRepository.findByHackathon(hackathon.getId()));
     }
 }

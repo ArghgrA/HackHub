@@ -12,4 +12,8 @@ import java.util.UUID;
 public interface TicketRepository<T extends DefaultTicket> extends JpaRepository<T, UUID> {
     @Query("SELECT t FROM DefaultTicket t WHERE t.receiver.id = ?1")
     List<T> findByHackathon(UUID hackathon_id);
+
+    @Query("SELECT t FROM DefaultTicket t WHERE t.sender.id = ?1")
+    List<T> findByTeam(UUID team_id);
+
 }

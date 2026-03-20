@@ -94,9 +94,11 @@ public class TeamHandler {
         newInvite.setSender(team);
         newInvite.setMessage(request.message());
 
+        // add invite to user list
+        user.addInvite(newInvite);
+
         // persist in db
         inviteRepository.save(newInvite);
-
         return inviteMapper.toDto(newInvite);
     }
 
@@ -149,7 +151,7 @@ public class TeamHandler {
         //nell'if non va messo || ma &&
         if(hackathon.getState() != HackathonStateKind.REGISTRATION.getInstance() &&
            hackathon.getState() != HackathonStateKind.COMPETITION.getInstance() ) {
-            throw new IllegalStateException(String.format("cannot open new ticket in %s state",hackathon.getState().toString()));
+            throw new IllegalStateException(String.format("cannot open new ticket in %s state",hackathon.getState().getName()));
         }
 
         // create new ticket
@@ -246,7 +248,7 @@ public class TeamHandler {
     public CallDTO acceptCall(AcceptCallRequestDTO dto) {
         // Retrieve call from the database
         DefaultCall call = callRepository.findById(dto.callId())
-                .orElseThrow(() -> new EntityNotFoundException("No Call with id: " + dto.callId()));
+                .orElseThrow(() -> new EntityNotFoundException("No Call with that id"));
 
         // Check if the call is already accepted
         if (call.getCalendarEventId() != null) {
@@ -258,5 +260,18 @@ public class TeamHandler {
         call.setCalendarEventId(eventId);
         callRepository.save(call);
         return callMapper.toDTO(call);
+    }
+
+    public List<TicketDTO> getTicket(GetTicketRequestTeamDTO dto) {
+        TeamMember teamMember = teamMemberRepository
+                .findById(dto.teamMemberId())
+                .orElseThrow(() -> new EntityNotFoundException("No Member with that id"));
+
+        DefaultTeam team = teamRepository
+                .findById(dto.teamId())
+                .orElseThrow(() -> new EntityNotFoundException("No Team with that id"));
+
+        return ticketMapper
+                .toDTOList(ticketRepository.findByTeam(team.getId()));
     }
 }

@@ -5,15 +5,15 @@ import com.github.ArghgrA.Hackhub.dto.model.StaffDTO;
 import com.github.ArghgrA.Hackhub.dto.request.AddJudgeToHackathonRequestDTO;
 import com.github.ArghgrA.Hackhub.dto.request.AddMentorToHackathonRequestDTO;
 import com.github.ArghgrA.Hackhub.dto.request.CreateHackathonRequestDTO;
+import com.github.ArghgrA.Hackhub.dto.request.GetHackathonRequestDTO;
 import com.github.ArghgrA.Hackhub.handler.HackathonHandler;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/hackathon")
@@ -37,5 +37,11 @@ public class HackathonController {
     public ResponseEntity<StaffDTO> addMentor(@Valid @RequestBody AddMentorToHackathonRequestDTO dto) {
         StaffDTO response = hackathonHandler.addMentor(dto);
         return  ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @GetMapping("/get")
+    public ResponseEntity<List<HackathonDTO>> getHackathon(/* dto not used */) {
+        List<HackathonDTO> response = hackathonHandler.getHackathon(null);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }
