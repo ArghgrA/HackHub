@@ -75,4 +75,13 @@ public abstract class AbstractTeam implements Team<UUID> {
                     .findFirst();
     }
 
+    public void removeMember(TeamMember member) {
+        if (member == null) return;
+        if (members.contains(member)) {
+            members.remove(member);
+            member.setTeam(null);
+        }
+    }
+
+
 }

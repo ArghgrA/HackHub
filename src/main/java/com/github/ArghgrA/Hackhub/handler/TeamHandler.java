@@ -274,4 +274,31 @@ public class TeamHandler {
         return ticketMapper
                 .toDTOList(ticketRepository.findByTeam(team.getId()));
     }
+
+    public void leaveTeam(LeaveTeamRequestDTO dto) {
+        // retrieve team member from db
+        TeamMember teamMember = teamMemberRepository
+                .findById(dto.teamMemberId())
+                .orElseThrow(() -> new EntityNotFoundException("No Team Member with that id"));
+
+        // retrieve team from db
+        DefaultTeam team = teamRepository
+                .findById(dto.teamId())
+                .orElseThrow(() -> new EntityNotFoundException("No Team with that id"));
+
+        // check if the team member is in the team
+        if (!team.getMembers().contains(teamMember)) {
+            throw new IllegalStateException("Team Member is not in the Team");
+        }
+
+        // remove team member from team
+        team.removeMember(teamMember);
+
+        // transform team member in user
+        DefaultUser user = teamMember.transform(DefaultUser.class);
+
+        // persist changes in db
+        teamRepository.save(team);
+        userRepository.delete(user);
+    }
 }

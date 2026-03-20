@@ -84,4 +84,7 @@ public class TeamController {
         List<TicketDTO> response = teamHandler.getTicket(dto);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+
+    @PostMapping("/leave")
+    public void leaveTeam(@Valid @RequestBody LeaveTeamRequestDTO dto) {teamHandler.leaveTeam(dto);}
 }

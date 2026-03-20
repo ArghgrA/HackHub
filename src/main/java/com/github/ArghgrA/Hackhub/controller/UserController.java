@@ -1,6 +1,8 @@
 package com.github.ArghgrA.Hackhub.controller;
 
 import com.github.ArghgrA.Hackhub.dto.model.InviteDTO;
+import com.github.ArghgrA.Hackhub.dto.model.TeamMemberDTO;
+import com.github.ArghgrA.Hackhub.dto.request.AcceptInviteRequestDTO;
 import com.github.ArghgrA.Hackhub.dto.request.GetInviteRequestDTO;
 import com.github.ArghgrA.Hackhub.handler.UserHandler;
 import jakarta.validation.Valid;
@@ -24,6 +26,14 @@ public class UserController {
             ) {
         GetInviteRequestDTO dto = new GetInviteRequestDTO(userId);
         List<InviteDTO> response = userHandler.getInvite(dto);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @PostMapping("/invite/accept")
+    public ResponseEntity<TeamMemberDTO> acceptInvite(
+            @Valid @RequestBody AcceptInviteRequestDTO dto
+    ) {
+        TeamMemberDTO response = userHandler.acceptInvite(dto);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }
